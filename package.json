@@ -1,0 +1,70 @@
+{
+	"name": "yamf",
+	"type": "module",
+	"version": "0.0.0",
+	"description": "Yet another meta framework",
+	"license": "MIT",
+	"homepage": "https://github.com/pajecawav/yamf#readme",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/pajecawav/yamf.git"
+	},
+	"bugs": {
+		"url": "https://github.com/pajecawav/yamf/issues"
+	},
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"solid": "./dist/index.jsx",
+			"default": "./dist/index.js"
+		},
+		"./package.json": "./package.json"
+	},
+	"main": "./dist/index.js",
+	"module": "./dist/index.js",
+	"types": "./dist/index.d.ts",
+	"files": [
+		"dist"
+	],
+	"publishConfig": {
+		"access": "public"
+	},
+	"scripts": {
+		"build": "tsdown",
+		"dev": "tsdown --watch",
+		"test": "vitest run",
+		"test:watch": "vitest watch",
+		"test:coverage": "vitest run --coverage",
+		"test:ui": "vitest --ui",
+		"lint": "run-p -l lint:*",
+		"lint:eslint": "eslint .",
+		"lint:tsc": "tsc --noEmit",
+		"lint:format": "prettier . --check",
+		"lint:package": "publint",
+		"format": "prettier . --write",
+		"prepare": "husky",
+		"prepublishOnly": "cross-env FORCE_COLOR=1 npm-run-all -l -s build -p lint:* test"
+	},
+	"devDependencies": {
+		"@commitlint/cli": "^20.4.2",
+		"@commitlint/config-conventional": "^20.4.2",
+		"@eslint/js": "^10.0.1",
+		"@pajecawav/prettier-config": "^1.0.0",
+		"@types/node": "^25.3.0",
+		"@vitest/coverage-v8": "^4.0.18",
+		"@vitest/ui": "^4.0.18",
+		"cross-env": "^10.1.0",
+		"eslint": "^10.0.2",
+		"husky": "^9.1.7",
+		"lint-staged": "^16.2.7",
+		"npm-run-all2": "^8.0.4",
+		"prettier": "^3.8.1",
+		"publint": "^0.3.17",
+		"rolldown-plugin-solid": "^0.2.1",
+		"tsdown": "^0.20.3",
+		"typescript": "^5.9.3",
+		"typescript-eslint": "^8.56.1",
+		"vitest": "^4.0.18"
+	},
+	"packageManager": "pnpm@10.30.2+sha512.36cdc707e7b7940a988c9c1ecf88d084f8514b5c3f085f53a2e244c2921d3b2545bc20dd4ebe1fc245feec463bb298aecea7a63ed1f7680b877dc6379d8d0cb4"
+}
