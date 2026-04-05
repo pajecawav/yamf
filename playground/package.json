@@ -1,0 +1,22 @@
+{
+	"name": "playground",
+	"private": true,
+	"version": "0.0.0",
+	"type": "module",
+	"scripts": {
+		"dev": "vite",
+		"build": "tsc -b && vite build",
+		"preview": "vite preview"
+	},
+	"dependencies": {
+		"solid-js": "^1.9.10"
+	},
+	"devDependencies": {
+		"@hiogawa/vite-plugin-fullstack": "^0.0.11",
+		"@types/node": "^24.10.1",
+		"tinyglobby": "^0.2.15",
+		"typescript": "~5.9.3",
+		"vite": "^8.0.0-beta.13",
+		"yamf": "workspace:*"
+	}
+}

@@ -5,18 +5,18 @@ import tseslint from "typescript-eslint";
 
 export default defineConfig(
 	{
-		ignores: ["**/dist", "**/coverage"],
+		ignores: ["**/dist", "**/.output", "**/coverage"],
 	},
 	{
 		extends: [eslint.configs.recommended, tseslint.configs.recommendedTypeChecked],
 		languageOptions: {
 			parserOptions: {
-				project: ["./tsconfig.node.json", "./tsconfig.lib.json"],
-				tsconfigRootDir: import.meta.dirname,
+				projectService: true,
 			},
 		},
 		rules: {
 			"@typescript-eslint/explicit-member-accessibility": "error",
+			"@typescript-eslint/consistent-type-imports": "error",
 		},
 	},
 );

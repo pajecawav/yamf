@@ -1,8 +1,5 @@
-export function sum(...values: number[]): number {
-	let result = 0;
+export { Island } from "./island/Island";
+export type { IslandProps } from "./island/Island";
 
-	for (const value of values) {
-		result += value;
-	}
-	return result;
-}
+export { Head } from "./components/Head";
+export type { HeadProps } from "./components/Head";

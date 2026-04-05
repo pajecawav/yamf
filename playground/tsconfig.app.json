@@ -1,16 +1,12 @@
 {
 	"compilerOptions": {
-		"tsBuildInfoFile": "./node_modules/.tmp/tsconfig.node.tsbuildinfo",
-
-		"target": "ES2023",
-		"lib": ["ES2023"],
+		"tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
+		"target": "ES2022",
+		"useDefineForClassFields": true,
 		"module": "ESNext",
-		"types": ["node"],
+		"lib": ["ES2022", "DOM", "DOM.Iterable"],
+		"types": ["vite/client"],
 		"skipLibCheck": true,
-
-		"paths": {
-			"#/*": ["./src/*"]
-		},
 
 		/* Bundler mode */
 		"moduleResolution": "bundler",
@@ -18,8 +14,8 @@
 		"verbatimModuleSyntax": true,
 		"moduleDetection": "force",
 		"noEmit": true,
-
-		"allowJs": true,
+		"jsx": "preserve",
+		"jsxImportSource": "solid-js",
 
 		/* Linting */
 		"strict": true,
@@ -29,14 +25,5 @@
 		"noFallthroughCasesInSwitch": true,
 		"noUncheckedSideEffectImports": true
 	},
-	"include": [
-		"src/vite",
-		"src/shared",
-		".lintstagedrc.mjs",
-		"prettier.config.mjs",
-		"commitlint.config.js",
-		"eslint.config.mjs",
-		"tsdown.config.ts"
-	],
-	"exclude": ["node_modules"]
+	"include": ["src"]
 }

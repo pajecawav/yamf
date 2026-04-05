@@ -1,16 +1,35 @@
 import solid from "rolldown-plugin-solid";
-import { defineConfig } from "tsdown";
+import { defineConfig, type InlineConfig, type UserConfig } from "tsdown";
+
+const getSharedOptions = (cfg: InlineConfig): UserConfig => ({
+	// TODO: figure out
+	watch: cfg.watch ? "./src" : false,
+	deps: {
+		neverBundle: [/^virtual:/],
+	},
+});
 
 // export both js and jsx
-export default defineConfig([
+export default defineConfig(cfg => [
 	{
+		entry: "./src/vite/index.ts",
+		unbundle: true,
+		platform: "node",
+		outDir: "dist/vite",
+		tsconfig: "./tsconfig.node.json",
+		...getSharedOptions(cfg),
+	},
+	{
+		entry: ["./src/index.ts", "./src/client/index.ts"],
 		unbundle: true,
 		platform: "neutral",
 		tsconfig: "./tsconfig.lib.json",
 		// use the solid plugin to handle jsx
 		plugins: [solid()],
+		...getSharedOptions(cfg),
 	},
 	{
+		entry: ["./src/index.ts", "./src/client/index.ts"],
 		unbundle: true,
 		platform: "neutral",
 		tsconfig: "./tsconfig.lib.json",
@@ -21,5 +40,6 @@ export default defineConfig([
 			};
 		},
 		outExtensions: () => ({ js: ".jsx" }),
+		...getSharedOptions(cfg),
 	},
 ]);
