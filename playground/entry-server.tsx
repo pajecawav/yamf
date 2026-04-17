@@ -1,65 +1,53 @@
-// import { defineHandler } from "nitro/h3";
-// import clientAssets from "./client/index.ts?assets=client";
-// import serverAssets from "./entry-server?assets=ssr";
+import { defineHandler, HTTPError } from "nitro/h3";
+import path from "node:path";
+import { addRoute, createRouter, findRoute } from "rou3";
+import { withLeadingSlash, withoutTrailingSlash } from "ufo";
+import type { PageHandler } from "yamf";
 
-// console.log("entry-server", { clientAssets, serverAssets });
+const router = createRouter<() => Promise<PageHandler>>();
 
-// // export default {
-// // 	fetch(): Response {
-// // 		return new Response("123");
-// // 	},
-// // };
+const PAGES = import.meta.glob<PageHandler>("./pages/**/*.{js,mjs,cjs,ts,mts,cts,tsx,jsx}", {
+	import: "default",
+});
 
-// export default defineHandler(event => {
-// 	return 123;
-// });
+const pages = Object.entries(PAGES)
+	.toSorted((a, b) => a[0].localeCompare(b[0]))
+	.map(([relativePath, handler]) => {
+		const ext = path.extname(relativePath);
 
-import { defineHandler } from "nitro/h3";
-import {
-	// HydrationScript,
-	renderToStream,
-} from "solid-js/web";
-import { Island, Head } from "yamf";
-import { createResource, Suspense } from "solid-js";
-import Counter, { type CounterProps } from "./components/Counter.island";
+		let route = path.relative("./pages", relativePath);
 
-const AsyncCounter = (props: CounterProps) => {
-	const [initialValue] = createResource(
-		() =>
-			new Promise<number | undefined>(resolve =>
-				setTimeout(resolve, 2000, props.initialValue),
-			),
-	);
+		if (ext.length) {
+			route = route.slice(0, -ext.length);
+		}
 
-	return <Island Component={Counter} props={{ initialValue: initialValue() }} />;
-};
+		route =
+			route
+				.replace(/\.[A-Za-z]+$/, "")
+				.replace(/\(([^(/\\]+)\)[/\\]/g, "")
+				.replace(/\[\.{3}]/g, "**")
+				.replace(/\[\.{3}([^\]]+)]/g, (_, p: string) => "**:" + p.replace(/[^\w-]/g, "_"))
+				.replace(/\[([^/\]]+)]/g, (_, p: string) => ":" + p.replace(/[^\w-]/g, "_"))
+				.replace(/(\/|^)index$/, "") || "/";
 
-export default defineHandler(() => {
-	const stream = renderToStream(() => (
-		<html>
-			<Head>
-				<title>YAMF Playground</title>
-			</Head>
-			<body>
-				<Counter initialValue={1} />
-				<Island Component={Counter} props={{ initialValue: 2 }} />
-				<Suspense fallback={<span>Loading...</span>}>
-					<AsyncCounter initialValue={3} />
-				</Suspense>
-
-				{/*<HydrationScript />*/}
-			</body>
-		</html>
-	));
-
-	const { readable, writable } = new TransformStream();
-
-	// TODO: prepend doctype html
-	stream.pipeTo(writable);
-
-	return new Response(readable, {
-		headers: {
-			"Content-Type": "text/html",
-		},
+		return {
+			route: withLeadingSlash(withoutTrailingSlash(route)),
+			handler,
+		};
 	});
+
+for (const { route, handler } of pages) {
+	addRoute(router, "GET", route, handler);
+}
+
+export default defineHandler(async event => {
+	const route = findRoute(router, "GET", event.url.pathname);
+
+	if (!route) {
+		throw new HTTPError("Not found", { status: 404 });
+	}
+
+	const handler = await route.data();
+
+	return handler(event);
 });

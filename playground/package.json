@@ -9,6 +9,7 @@
 		"preview": "vite preview"
 	},
 	"dependencies": {
+		"rou3": "^0.8.1",
 		"solid-js": "^1.9.10"
 	},
 	"devDependencies": {

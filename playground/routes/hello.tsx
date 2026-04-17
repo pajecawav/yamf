@@ -1,17 +1,8 @@
 import { defineHandler } from "nitro/h3";
-import { HydrationScript, renderToStream } from "solid-js/web";
-import {
-	Island,
-	// clientAssets
-} from "yamf";
-import Counter, { type CounterProps } from "../components/Counter.island";
 import { createResource, Suspense } from "solid-js";
-import clientAssets2 from "../client/index?assets=client";
-
-console.log("routes/hello.tsx", {
-	// clientAssets,
-	clientAssets2,
-});
+import { HydrationScript, renderToStream } from "solid-js/web";
+import { Island } from "yamf";
+import Counter, { type CounterProps } from "../components/Counter.island";
 
 const AsyncCounter = (props: CounterProps) => {
 	const [initialValue] = createResource(
