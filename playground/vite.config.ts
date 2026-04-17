@@ -21,6 +21,9 @@ export default defineConfig({
 			},
 		}),
 	],
+	build: {
+		sourcemap: true,
+	},
 	environments: {
 		ssr: {
 			build: {

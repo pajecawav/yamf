@@ -12,7 +12,6 @@ export default definePage({
 					<title>YAMF Playground</title>
 				</Head>
 				<body>
-					{/*<NoHydration>*/}
 					<Counter initialValue={1} />
 					<Island Component={Counter} props={{ initialValue: 2 }} />
 					<Suspense fallback={<span>Loading...</span>}>
@@ -20,9 +19,6 @@ export default definePage({
 					</Suspense>
 
 					<p>URL: {event.url.toString()}</p>
-
-					{/*<HydrationScript />*/}
-					{/*</NoHydration>*/}
 				</body>
 			</html>
 		);

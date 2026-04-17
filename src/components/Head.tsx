@@ -1,4 +1,5 @@
 import type { ParentProps } from "solid-js";
+import { HydrationScript } from "solid-js/web";
 import { clientAssets as assets } from "virtual:yamf:assets";
 
 export type HeadProps = ParentProps;
@@ -14,6 +15,7 @@ export const Head = (props: HeadProps) => {
 				<link type="modulepreload" {...attrs} />
 			))}
 			<script type="module" src={assets.entry} />
+			<HydrationScript />
 		</head>
 	);
 };
