@@ -12,11 +12,25 @@ export default definePage({
 					<title>YAMF Playground</title>
 				</Head>
 				<body>
-					<Counter initialValue={1} />
-					<Island Component={Counter} props={{ initialValue: 2 }} />
-					<Suspense fallback={<span>Loading...</span>}>
-						<AsyncCounter initialValue={3} />
-					</Suspense>
+					<div
+						style={{
+							display: "flex",
+							"align-items": "flex-start",
+							gap: "16px",
+						}}
+					>
+						<Counter initialValue={1} />
+
+						<Island Component={Counter} props={{ initialValue: 2 }} />
+
+						<Suspense fallback={<span>Loading...</span>}>
+							<AsyncCounter initialValue={3} />
+						</Suspense>
+
+						<Suspense fallback={<span>Loading...</span>}>
+							<AsyncCounter initialValue={7} delay={5000} />
+						</Suspense>
+					</div>
 
 					<p>URL: {event.url.toString()}</p>
 				</body>
