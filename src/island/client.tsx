@@ -3,6 +3,9 @@ import type { Component } from "solid-js";
 import { hydrate } from "solid-js/web";
 import { withLeadingSlash } from "ufo";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+declare let __island_raw_import__: (file: string) => Promise<any>;
+
 customElements.define(
 	"yamf-island",
 	class extends HTMLElement {
@@ -36,7 +39,7 @@ customElements.define(
 
 			const src = withLeadingSlash(islandSrc);
 
-			void import(src).then(hydrateIsland);
+			void __island_raw_import__(src).then(hydrateIsland);
 		}
 	},
 );
