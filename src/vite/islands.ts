@@ -128,6 +128,8 @@ export const islands = (): Plugin[] => {
 					if (code.includes("__island_raw_import__")) {
 						return code.replaceAll("__island_raw_import__", "import");
 					}
+
+					return undefined;
 				},
 			},
 		},

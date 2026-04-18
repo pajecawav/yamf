@@ -13,7 +13,6 @@
 		"rou3": "^0.8.1"
 	},
 	"devDependencies": {
-		"@hiogawa/vite-plugin-fullstack": "^0.0.11",
 		"@types/node": "^24.12.2",
 		"tinyglobby": "^0.2.16",
 		"typescript": "~5.9.3",

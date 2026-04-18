@@ -8,6 +8,8 @@
 		"module": "ESNext",
 		"skipLibCheck": true,
 
+		"types": ["node"],
+
 		"jsx": "react-jsx",
 		"jsxImportSource": "hono/jsx",
 
@@ -40,5 +42,5 @@
 		"noUnusedParameters": true
 	},
 	"include": ["src"],
-	"exclude": ["src/vite", "node_modules"]
+	"exclude": ["node_modules"]
 }

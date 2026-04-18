@@ -14,7 +14,7 @@ export default defineConfig(cfg => [
 		unbundle: true,
 		platform: "node",
 		outDir: "dist/vite",
-		tsconfig: "./tsconfig.node.json",
+		tsconfig: "./tsconfig.lib.json",
 		...getSharedOptions(cfg),
 	},
 	{

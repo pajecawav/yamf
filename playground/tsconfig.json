@@ -1,12 +1,4 @@
 {
-	"extends": ["nitro/tsconfig"],
-	"compilerOptions": {
-		"jsx": "react-jsx",
-		"jsxImportSource": "hono/jsx",
-		"paths": {
-			"~/*": ["./*"]
-		},
-
-		"types": ["vite/client"]
-	}
+	"files": [],
+	"references": [{ "path": "./tsconfig.app.json" }, { "path": "./tsconfig.node.json" }]
 }
