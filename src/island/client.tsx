@@ -3,8 +3,7 @@ import type { Component } from "solid-js";
 import { hydrate } from "solid-js/web";
 import { withLeadingSlash } from "ufo";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-declare let __island_raw_import__: (file: string) => Promise<any>;
+declare let __island_raw_import__: <T>(file: string) => Promise<T>;
 
 customElements.define(
 	"yamf-island",
@@ -23,10 +22,6 @@ customElements.define(
 				throw new Error("Missing island-entry attribute");
 			}
 
-			// const hydrateIsland = (Comp: Component) => {
-			// 	hydrate(() => <Comp {...islandProps} />, this);
-			// };
-
 			const hydrateIsland = (mod: Record<string, Component>) => {
 				const Comp = mod[islandEntry];
 
@@ -34,12 +29,13 @@ customElements.define(
 					throw new Error(`Missing island entry ${islandEntry} in ${islandSrc}`);
 				}
 
+				// TODO: hydrate only children? or wrap in <ghloc-island>
 				hydrate(() => <Comp {...islandProps} />, this);
 			};
 
 			const src = withLeadingSlash(islandSrc);
 
-			void __island_raw_import__(src).then(hydrateIsland);
+			void __island_raw_import__<Record<string, Component>>(src).then(hydrateIsland);
 		}
 	},
 );

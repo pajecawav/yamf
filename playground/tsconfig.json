@@ -8,8 +8,8 @@
 		"jsxImportSource": "solid-js",
 		"paths": {
 			"~/*": ["./*"]
-		}
+		},
 
-		// "types": ["vite/client"]
+		"types": ["vite/client"]
 	}
 }

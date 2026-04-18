@@ -1,4 +1,4 @@
-import solid from "rolldown-plugin-solid";
+import solid from "unplugin-solid/rolldown";
 import { defineConfig, type InlineConfig, type UserConfig } from "tsdown";
 
 const getSharedOptions = (cfg: InlineConfig): UserConfig => ({
@@ -20,12 +20,22 @@ export default defineConfig(cfg => [
 		...getSharedOptions(cfg),
 	},
 	{
+		entry: "./src/server/index.ts",
+		unbundle: true,
+		platform: "node",
+		outDir: "dist/server",
+		tsconfig: "./tsconfig.lib.json",
+		// use the solid plugin to handle jsx
+		plugins: [solid({ ssr: true, hot: false })],
+		...getSharedOptions(cfg),
+	},
+	{
 		entry: ["./src/index.ts", "./src/client/index.ts"],
 		unbundle: true,
 		platform: "neutral",
 		tsconfig: "./tsconfig.lib.json",
 		// use the solid plugin to handle jsx
-		plugins: [solid()],
+		plugins: [solid({ ssr: false, hot: false })],
 		...getSharedOptions(cfg),
 	},
 	{

@@ -1,5 +1,4 @@
 // reference https://github.com/hi-ogawa/vite-plugin-fullstack/blob/28e9540a68529c58842e9a3bf17d2193a065d524/examples/island/src/framework/island/plugin.ts
-
 import { generate } from "@babel/generator";
 import { parse } from "@babel/parser";
 import _traverse from "@babel/traverse";
@@ -10,21 +9,18 @@ import {
 	identifier,
 	importDeclaration,
 	importDefaultSpecifier,
+	importNamespaceSpecifier,
 	memberExpression,
-	objectExpression,
-	objectProperty,
 	stringLiteral,
 	variableDeclaration,
 	variableDeclarator,
 } from "@babel/types";
-// import path from "node:path";
 import type { Plugin } from "vite";
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 const traverse = (_traverse.default as typeof _traverse) ?? _traverse;
 
-// const ISLAND_REGEX = /\.island(\.lazy)?\.(j|t)sx?$/;
 const ISLAND_REGEX = /\.island\.(j|t)sx?$/;
 
 export const islands = (): Plugin[] => {
@@ -35,11 +31,9 @@ export const islands = (): Plugin[] => {
 			transform: {
 				filter: { id: ISLAND_REGEX },
 				handler(code, id) {
-					// if (!ISLAND_REGEX.test(id)) {
-					// 	return;
-					// }
-
-					// const src = path.posix.relative(process.cwd(), id);
+					if (this.environment.name !== "ssr") {
+						return;
+					}
 
 					const ast = parse(code, {
 						sourceType: "module",
@@ -47,8 +41,17 @@ export const islands = (): Plugin[] => {
 					});
 
 					traverse(ast, {
-						// TODO:
 						Program(path) {
+							// prepends server island runtime
+							// import * as __runtime from "yamf/server";
+							path.unshiftContainer(
+								"body",
+								importDeclaration(
+									[importNamespaceSpecifier(identifier("__runtime"))],
+									stringLiteral("yamf/server"),
+								),
+							);
+
 							// prepends asset imports for the island:
 							// import __assets from "MODULE_ID?assets=client";
 							path.unshiftContainer(
@@ -97,25 +100,13 @@ export const islands = (): Plugin[] => {
 								exportDefaultDeclaration(
 									callExpression(
 										memberExpression(
-											identifier("Object"),
-											identifier("assign"),
+											identifier("__runtime"),
+											identifier("createIsland"),
 										),
 										[
 											islandIdentifier,
-											objectExpression([
-												// objectProperty(identifier("src"), stringLiteral(src)),
-												objectProperty(
-													identifier("src"),
-													memberExpression(
-														identifier("__assets"),
-														identifier("entry"),
-													),
-												),
-												objectProperty(
-													identifier("entry"),
-													stringLiteral("default"),
-												),
-											]),
+											stringLiteral("default"),
+											identifier("__assets"),
 										],
 									),
 								),

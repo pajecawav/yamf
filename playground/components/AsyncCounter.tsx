@@ -1,5 +1,4 @@
 import { createResource } from "solid-js";
-import { Island } from "yamf";
 import Counter, { type CounterProps } from "./Counter.island";
 
 interface AsyncCounterProps extends CounterProps {
@@ -14,5 +13,5 @@ export const AsyncCounter = (props: AsyncCounterProps) => {
 			),
 	);
 
-	return <Island Component={Counter} props={{ initialValue: initialValue() }} />;
+	return <Counter initialValue={initialValue()} />;
 };

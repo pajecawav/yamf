@@ -27,6 +27,10 @@
 			"solid": "./dist/client/index.jsx",
 			"default": "./dist/client/index.js"
 		},
+		"./server": {
+			"types": "./dist/server/index.d.mts",
+			"default": "./dist/server/index.mjs"
+		},
 		"./package.json": "./package.json"
 	},
 	"main": "./dist/index.js",
@@ -90,10 +94,10 @@
 		"npm-run-all2": "^8.0.4",
 		"prettier": "^3.8.3",
 		"publint": "^0.3.18",
-		"rolldown-plugin-solid": "^0.2.1",
 		"tsdown": "0.21.9",
 		"typescript": "^6.0.3",
 		"typescript-eslint": "^8.58.2",
+		"unplugin-solid": "^1.0.0",
 		"vite": "^8.0.8",
 		"vitest": "^4.1.4"
 	},

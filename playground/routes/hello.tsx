@@ -1,7 +1,6 @@
 import { defineHandler } from "nitro/h3";
 import { createResource, Suspense } from "solid-js";
 import { HydrationScript, renderToStream } from "solid-js/web";
-import { Island } from "yamf";
 import Counter, { type CounterProps } from "../components/Counter.island";
 
 const AsyncCounter = (props: CounterProps) => {
@@ -12,7 +11,7 @@ const AsyncCounter = (props: CounterProps) => {
 			),
 	);
 
-	return <Island Component={Counter} props={{ initialValue: initialValue() }} />;
+	return <Counter initialValue={initialValue()} />;
 };
 
 export default defineHandler(() => {
@@ -23,7 +22,7 @@ export default defineHandler(() => {
 			</head>
 			<body>
 				<Counter initialValue={1} />
-				<Island Component={Counter} props={{ initialValue: 2 }} />
+				<Counter initialValue={2} />
 				<Suspense fallback={<span>Loading...</span>}>
 					<AsyncCounter initialValue={3} />
 				</Suspense>
