@@ -37,9 +37,21 @@ const yamf = (): PluginOption[] => {
 	plugins.push(virtualAssets());
 	plugins.push(virtualPages());
 
+	// TODO: extendable config
 	plugins.push(
 		nitro({
 			serverDir: "./src",
+			compressPublicAssets: {
+				gzip: true,
+				brotli: true,
+			},
+			publicAssets: [
+				{
+					baseURL: "assets",
+					dir: "./public/assets",
+					maxAge: 365 * 24 * 60 * 60,
+				},
+			],
 		}),
 	);
 
