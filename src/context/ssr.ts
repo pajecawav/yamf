@@ -1,4 +1,4 @@
-import type { ImportAssetsResult } from "#/shared/types";
+import type { ImportAssetsResult } from "#/shared/assets";
 import { createContext } from "hono/jsx";
 
 interface SSRContextValue {

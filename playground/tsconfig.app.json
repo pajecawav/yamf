@@ -18,7 +18,7 @@
 		"jsxImportSource": "hono/jsx",
 
 		"paths": {
-			"~/*": ["./*"]
+			"~/*": ["./src/*"]
 		},
 
 		/* Linting */

@@ -32,6 +32,9 @@ importers:
       nitro:
         specifier: 3.0.260415-beta
         version: 3.0.260415-beta(jiti@2.6.1)(vite@8.0.8(@types/node@24.12.2)(esbuild@0.27.3)(jiti@2.6.1)(yaml@2.8.3))
+      rou3:
+        specifier: ^0.8.1
+        version: 0.8.1
       ufo:
         specifier: ^1.6.3
         version: 1.6.3

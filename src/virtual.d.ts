@@ -1,7 +1,13 @@
 declare module "virtual:yamf:assets" {
 	// eslint-disable-next-line @typescript-eslint/consistent-type-imports
-	export const clientAssets: import("./shared/types").ImportAssetsResult;
+	export const clientAssets: import("./shared/assets").ImportAssetsResult;
 
 	// eslint-disable-next-line @typescript-eslint/consistent-type-imports
-	export const serverAssets: import("./shared/types").ImportAssetsResult;
+	export const serverAssets: import("./shared/assets").ImportAssetsResult;
+}
+
+declare module "virtual:yamf:pages" {
+	export const pages: Record<string, () => Promise<PageHandler>>;
+
+	export const assets: Record<string, ImportAssetsResult>;
 }

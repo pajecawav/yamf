@@ -3,21 +3,14 @@ import yamf from "yamf/vite";
 import { globSync } from "tinyglobby";
 
 export default defineConfig({
-	// TODO: figure out file watching
-	// server: {
-	// 	watch: {
-	// 		ignored: ["!**/node_modules/yamf/**"],
-	// 	},
-	// },
 	optimizeDeps: {
 		exclude: ["yamf"],
-		// entries: ["./client/index.ts", "./components/**/*.island.*"],
-		entries: ["./client/index.ts", "./**/*.island.*"],
+		entries: ["./src/client/index.ts", "./src/**/*.island.*"],
 	},
 	plugins: [
 		yamf({
 			nitro: {
-				serverDir: "./",
+				serverDir: "./src",
 			},
 		}),
 	],
@@ -28,7 +21,7 @@ export default defineConfig({
 		ssr: {
 			build: {
 				rollupOptions: {
-					input: "./entry-server.tsx",
+					input: "./src/entry-server.tsx",
 				},
 			},
 		},
@@ -36,7 +29,7 @@ export default defineConfig({
 			build: {
 				sourcemap: true,
 				rolldownOptions: {
-					input: ["./client/index.ts", ...globSync("./**/*.island.*")],
+					input: ["./src/client/index.ts", ...globSync("./src/**/*.island.*")],
 				},
 			},
 		},

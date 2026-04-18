@@ -1,4 +1,4 @@
-import type { ImportAssetsResultRaw } from "#/shared/types";
+import type { ImportAssetsResultRaw } from "#/shared/assets";
 import { stringify } from "devalue";
 import type { Child, FC } from "hono/jsx";
 

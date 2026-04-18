@@ -2,7 +2,7 @@ import { html, raw } from "hono/html";
 import type { Child } from "hono/jsx";
 import { renderToReadableStream } from "hono/jsx/streaming";
 import type { EventHandlerRequest, EventHandlerResponse, H3Event } from "nitro/h3";
-import type { ImportAssetsResult } from "./shared/types";
+import type { ImportAssetsResult } from "./shared/assets";
 import { SSRContext } from "./context/ssr";
 
 export type PageHandler = (

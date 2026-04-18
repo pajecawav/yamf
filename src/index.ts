@@ -7,4 +7,4 @@ export type { HeadProps } from "./components/Head";
 export { definePage } from "./page";
 export type { PageHandler } from "./page";
 
-export type { ImportAssetsResultRaw, ImportAssetsResult } from "./shared/types";
+export type { ImportAssetsResultRaw, ImportAssetsResult } from "./shared/assets";
