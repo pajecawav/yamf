@@ -24,6 +24,9 @@
 		"isolatedModules": true,
 		"noEmit": true,
 
+		"declaration": true,
+		"isolatedDeclarations": true,
+
 		"allowJs": false,
 		"esModuleInterop": true,
 		"allowSyntheticDefaultImports": true,

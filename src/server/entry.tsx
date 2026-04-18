@@ -1,4 +1,5 @@
 import type { PageHandler } from "#/page";
+import type { EventHandlerRequest, EventHandlerWithFetch } from "nitro/h3";
 import { defineHandler, HTTPError } from "nitro/h3";
 import path from "node:path";
 import { addRoute, createRouter, findRoute } from "rou3";
@@ -40,7 +41,10 @@ for (const [relativePath, handler] of Object.entries(pages).toSorted((a, b) =>
 	});
 }
 
-export const defineServerEntry = () => {
+export const defineServerEntry = (): EventHandlerWithFetch<
+	EventHandlerRequest,
+	Promise<unknown>
+> => {
 	return defineHandler(async event => {
 		const route = findRoute(router, "GET", event.url.pathname);
 
