@@ -1,6 +1,6 @@
 import { parse } from "devalue";
 import type { Component } from "solid-js";
-import { hydrate } from "solid-js/web";
+import { render } from "solid-js/web";
 import { withLeadingSlash } from "ufo";
 
 declare let __island_raw_import__: <T>(file: string) => Promise<T>;
@@ -29,8 +29,8 @@ customElements.define(
 					throw new Error(`Missing island entry ${islandEntry} in ${islandSrc}`);
 				}
 
-				// TODO: hydrate only children? or wrap in <ghloc-island>
-				hydrate(() => <Comp {...islandProps} />, this);
+				// TODO: figure out hydration mismatch in dev
+				render(() => <Comp {...islandProps} />, this);
 			};
 
 			const src = withLeadingSlash(islandSrc);

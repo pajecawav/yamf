@@ -9,6 +9,7 @@ declare module "solid-js" {
 			"yamf-island": {
 				"island-props"?: string;
 				"island-src": string;
+				"island-entry": string;
 				children: JSX.Element;
 				style?: JSX.CSSProperties;
 			};
