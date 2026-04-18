@@ -1,6 +1,7 @@
 import { Suspense } from "hono/jsx";
 import { definePage, Head } from "yamf";
 import { AsyncCounter } from "~/components/AsyncCounter";
+import { Container } from "~/components/Container";
 import Counter from "~/components/Counter.island";
 
 export default definePage({
@@ -12,14 +13,7 @@ export default definePage({
 					<title>YAMF Playground</title>
 				</Head>
 				<body>
-					<div
-						// TODO: page assets
-						style={{
-							display: "flex",
-							"align-items": "flex-start",
-							gap: "16px",
-						}}
-					>
+					<Container>
 						<Counter initialValue={1} />
 
 						<Counter initialValue={2} />
@@ -31,7 +25,7 @@ export default definePage({
 						<Suspense fallback={<span>Loading...</span>}>
 							<AsyncCounter initialValue={7} delay={5000} />
 						</Suspense>
-					</div>
+					</Container>
 
 					<p>URL: {event.url.toString()}</p>
 				</body>

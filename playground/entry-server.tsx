@@ -2,13 +2,26 @@ import { defineHandler, HTTPError } from "nitro/h3";
 import path from "node:path";
 import { addRoute, createRouter, findRoute } from "rou3";
 import { withLeadingSlash, withoutTrailingSlash } from "ufo";
-import type { PageHandler } from "yamf";
+import type { PageHandler, ImportAssetsResult } from "yamf";
 
-const router = createRouter<() => Promise<PageHandler>>();
+interface Route {
+	handler: () => Promise<PageHandler>;
+	serverAssets?: ImportAssetsResult;
+}
+
+const router = createRouter<Route>();
 
 const PAGES = import.meta.glob<PageHandler>("./pages/**/*.{js,mjs,cjs,ts,mts,cts,tsx,jsx}", {
 	import: "default",
 });
+const PAGES_ASSETS = import.meta.glob<ImportAssetsResult>(
+	"./pages/**/*.{js,mjs,cjs,ts,mts,cts,tsx,jsx}",
+	{
+		import: "default",
+		query: "?assets=ssr",
+		eager: true,
+	},
+);
 
 const pages = Object.entries(PAGES)
 	.toSorted((a, b) => a[0].localeCompare(b[0]))
@@ -33,11 +46,12 @@ const pages = Object.entries(PAGES)
 		return {
 			route: withLeadingSlash(withoutTrailingSlash(route)),
 			handler,
+			serverAssets: PAGES_ASSETS[relativePath],
 		};
 	});
 
-for (const { route, handler } of pages) {
-	addRoute(router, "GET", route, handler);
+for (const { route, handler, serverAssets } of pages) {
+	addRoute(router, "GET", route, { handler, serverAssets });
 }
 
 export default defineHandler(async event => {
@@ -47,7 +61,7 @@ export default defineHandler(async event => {
 		throw new HTTPError("Not found", { status: 404 });
 	}
 
-	const handler = await route.data();
+	const { handler, serverAssets } = route.data;
 
-	return handler(event);
+	return (await handler())(event, { serverAssets });
 });

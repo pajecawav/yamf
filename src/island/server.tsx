@@ -1,6 +1,6 @@
+import type { ImportAssetsResultRaw } from "#/shared/types";
 import { stringify } from "devalue";
 import type { Child, FC } from "hono/jsx";
-import type { ImportAssetsResultRaw } from "virtual:yamf:assets";
 
 declare module "hono/jsx" {
 	// eslint-disable-next-line @typescript-eslint/no-namespace

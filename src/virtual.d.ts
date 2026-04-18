@@ -1,15 +1,7 @@
 declare module "virtual:yamf:assets" {
-	// https://github.com/nitrojs/nitro/blob/bfbb207c720ce10ec7ad7887c7a8269d493eec55/lib/vite.types.d.mts
-	type ImportAssetsResult = ImportAssetsResultRaw & {
-		merge(...args: ImportAssetsResultRaw[]): ImportAssetsResult;
-	};
+	// eslint-disable-next-line @typescript-eslint/consistent-type-imports
+	export const clientAssets: import("./shared/types").ImportAssetsResult;
 
-	type ImportAssetsResultRaw = {
-		entry?: string;
-		js: { href: string }[];
-		css: { href: string; "data-vite-dev-id"?: string }[];
-	};
-
-	export const clientAssets: ImportAssetsResult;
-	export const serverAssets: ImportAssetsResult;
+	// eslint-disable-next-line @typescript-eslint/consistent-type-imports
+	export const serverAssets: import("./shared/types").ImportAssetsResult;
 }

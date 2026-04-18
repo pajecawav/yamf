@@ -1,9 +1,14 @@
 import { html, raw } from "hono/html";
 import type { Child } from "hono/jsx";
 import { renderToReadableStream } from "hono/jsx/streaming";
-import type { EventHandler, EventHandlerRequest, H3Event } from "nitro/h3";
+import type { EventHandlerRequest, EventHandlerResponse, H3Event } from "nitro/h3";
+import type { ImportAssetsResult } from "./shared/types";
+import { SSRContext } from "./context/ssr";
 
-export type PageHandler = EventHandler<EventHandlerRequest, Child | Promise<Child>>;
+export type PageHandler = (
+	event: H3Event<EventHandlerRequest>,
+	params: { serverAssets?: ImportAssetsResult },
+) => EventHandlerResponse;
 
 export type PageLoader<TLoaderData> = (
 	event: H3Event<EventHandlerRequest>,
@@ -11,7 +16,7 @@ export type PageLoader<TLoaderData> = (
 
 export type PageRenderer<TLoaderData> = (
 	event: H3Event<EventHandlerRequest>,
-	params: { loaderData: TLoaderData },
+	params: { loaderData: TLoaderData; assets?: ImportAssetsResult },
 ) => Child | Promise<Child>;
 
 interface DefinePageOptions<TLoaderData> {
@@ -22,11 +27,17 @@ interface DefinePageOptions<TLoaderData> {
 export const definePage = <TLoaderData = never,>({
 	loader,
 	render,
-}: DefinePageOptions<TLoaderData>): EventHandler => {
-	return async event => {
+}: DefinePageOptions<TLoaderData>): PageHandler => {
+	return async (event, params) => {
 		const loaderData = await loader(event);
 
-		const app = await render(event, { loaderData });
+		const Content = async () => <>{await render(event, { loaderData })}</>;
+
+		const app = (
+			<SSRContext value={{ serverAssets: params.serverAssets }}>
+				<Content />
+			</SSRContext>
+		);
 
 		const docType = raw("<!DOCTYPE html>");
 

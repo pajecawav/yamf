@@ -5,7 +5,7 @@ import tseslint from "typescript-eslint";
 
 export default defineConfig(
 	{
-		ignores: ["**/dist", "**/.output", "**/coverage"],
+		ignores: ["**/dist", "**/.output", "**/coverage", "playground"],
 	},
 	{
 		extends: [eslint.configs.recommended, tseslint.configs.recommendedTypeChecked],
