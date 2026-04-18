@@ -1,6 +1,5 @@
 import { nitro, type NitroPluginConfig } from "nitro/vite";
 import type { PluginOption } from "vite";
-import solid from "vite-plugin-solid";
 import { islands } from "./islands";
 import { virtualAssets } from "./virtual-assets";
 
@@ -10,9 +9,6 @@ interface YamfOptions {
 
 const yamf = (options: YamfOptions = {}): PluginOption[] => {
 	const plugins: PluginOption[] = [];
-
-	// TODO: dynamic ssr option?
-	plugins.push(solid({ ssr: true, hot: false }));
 
 	plugins.push(islands());
 

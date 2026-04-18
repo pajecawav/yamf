@@ -1,11 +1,8 @@
 {
-	// "files": [],
-	// "references": [{ "path": "./tsconfig.app.json" }, { "path": "./tsconfig.node.json" }]
-
 	"extends": ["nitro/tsconfig"],
 	"compilerOptions": {
-		"jsx": "preserve",
-		"jsxImportSource": "solid-js",
+		"jsx": "react-jsx",
+		"jsxImportSource": "hono/jsx",
 		"paths": {
 			"~/*": ["./*"]
 		},

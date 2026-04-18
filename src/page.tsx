@@ -1,8 +1,9 @@
+import { html, raw } from "hono/html";
+import type { Child } from "hono/jsx";
+import { renderToReadableStream } from "hono/jsx/streaming";
 import type { EventHandler, EventHandlerRequest, H3Event } from "nitro/h3";
-import type { JSX } from "solid-js";
-import { renderToStream } from "solid-js/web";
 
-export type PageHandler = EventHandler<EventHandlerRequest, JSX.Element | Promise<JSX.Element>>;
+export type PageHandler = EventHandler<EventHandlerRequest, Child | Promise<Child>>;
 
 export type PageLoader<TLoaderData> = (
 	event: H3Event<EventHandlerRequest>,
@@ -11,7 +12,7 @@ export type PageLoader<TLoaderData> = (
 export type PageRenderer<TLoaderData> = (
 	event: H3Event<EventHandlerRequest>,
 	params: { loaderData: TLoaderData },
-) => JSX.Element | Promise<JSX.Element>;
+) => Child | Promise<Child>;
 
 interface DefinePageOptions<TLoaderData> {
 	loader: PageLoader<TLoaderData>;
@@ -25,24 +26,15 @@ export const definePage = <TLoaderData = never,>({
 	return async event => {
 		const loaderData = await loader(event);
 
-		// const html = await renderToStringAsync(() => render(event, { loaderData }));
+		const app = await render(event, { loaderData });
 
-		// return new Response(html, {
-		// 	headers: {
-		// 		"Content-Type": "text/html",
-		// 	},
-		// });
+		const docType = raw("<!DOCTYPE html>");
 
-		const stream = renderToStream(() => render(event, { loaderData }));
+		const stream = renderToReadableStream(html`${docType}${app}`);
 
-		const { readable, writable } = new TransformStream();
-
-		// TODO: prepend doctype html
-		stream.pipeTo(writable);
-
-		return new Response(readable, {
+		return new Response(stream, {
 			headers: {
-				"Content-Type": "text/html",
+				"Content-Type": "text/html; charset=utf-8",
 			},
 		});
 	};

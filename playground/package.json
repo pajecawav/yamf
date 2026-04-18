@@ -10,7 +10,7 @@
 	},
 	"dependencies": {
 		"rou3": "^0.8.1",
-		"solid-js": "^1.9.10"
+		"hono": "^4.12.12"
 	},
 	"devDependencies": {
 		"@hiogawa/vite-plugin-fullstack": "^0.0.11",

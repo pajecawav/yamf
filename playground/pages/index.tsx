@@ -1,4 +1,4 @@
-import { Suspense } from "solid-js";
+import { Suspense } from "hono/jsx";
 import { definePage, Head } from "yamf";
 import { AsyncCounter } from "~/components/AsyncCounter";
 import Counter from "~/components/Counter.island";

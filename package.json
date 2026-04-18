@@ -15,7 +15,6 @@
 	"exports": {
 		".": {
 			"types": "./dist/index.d.ts",
-			"solid": "./dist/index.jsx",
 			"default": "./dist/index.js"
 		},
 		"./vite": {
@@ -24,7 +23,6 @@
 		},
 		"./client": {
 			"types": "./dist/client/index.d.ts",
-			"solid": "./dist/client/index.jsx",
 			"default": "./dist/client/index.js"
 		},
 		"./server": {
@@ -64,8 +62,8 @@
 		}
 	},
 	"peerDependencies": {
-		"solid-js": "^1.9.9",
-		"vite": "^8.0.0-beta.13"
+		"hono": "^4.12.12",
+		"vite": "^8.0.0"
 	},
 	"dependencies": {
 		"@babel/generator": "^7.29.1",
@@ -74,8 +72,7 @@
 		"@babel/types": "^7.29.0",
 		"devalue": "^5.7.1",
 		"nitro": "3.0.260415-beta",
-		"ufo": "^1.6.3",
-		"vite-plugin-solid": "^2.11.12"
+		"ufo": "^1.6.3"
 	},
 	"devDependencies": {
 		"@commitlint/cli": "^20.5.0",
@@ -97,7 +94,6 @@
 		"tsdown": "0.21.9",
 		"typescript": "^6.0.3",
 		"typescript-eslint": "^8.58.2",
-		"unplugin-solid": "^1.0.0",
 		"vite": "^8.0.8",
 		"vitest": "^4.1.4"
 	},

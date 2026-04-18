@@ -1,4 +1,3 @@
-import solid from "unplugin-solid/rolldown";
 import { defineConfig, type InlineConfig, type UserConfig } from "tsdown";
 
 const getSharedOptions = (cfg: InlineConfig): UserConfig => ({
@@ -25,8 +24,6 @@ export default defineConfig(cfg => [
 		platform: "node",
 		outDir: "dist/server",
 		tsconfig: "./tsconfig.lib.json",
-		// use the solid plugin to handle jsx
-		plugins: [solid({ ssr: true, hot: false })],
 		...getSharedOptions(cfg),
 	},
 	{
@@ -34,8 +31,6 @@ export default defineConfig(cfg => [
 		unbundle: true,
 		platform: "neutral",
 		tsconfig: "./tsconfig.lib.json",
-		// use the solid plugin to handle jsx
-		plugins: [solid({ ssr: false, hot: false })],
 		...getSharedOptions(cfg),
 	},
 	{

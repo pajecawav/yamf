@@ -1,6 +1,6 @@
 import { parse } from "devalue";
-import type { Component } from "solid-js";
-import { render } from "solid-js/web";
+import type { FC } from "hono/jsx";
+import { hydrateRoot } from "hono/jsx/dom/client";
 import { withLeadingSlash } from "ufo";
 
 declare let __island_raw_import__: <T>(file: string) => Promise<T>;
@@ -22,20 +22,19 @@ customElements.define(
 				throw new Error("Missing island-entry attribute");
 			}
 
-			const hydrateIsland = (mod: Record<string, Component>) => {
+			const hydrateIsland = (mod: Record<string, FC>) => {
 				const Comp = mod[islandEntry];
 
 				if (!Comp) {
 					throw new Error(`Missing island entry ${islandEntry} in ${islandSrc}`);
 				}
 
-				// TODO: figure out hydration mismatch in dev
-				render(() => <Comp {...islandProps} />, this);
+				hydrateRoot(this, <Comp {...islandProps} />);
 			};
 
 			const src = withLeadingSlash(islandSrc);
 
-			void __island_raw_import__<Record<string, Component>>(src).then(hydrateIsland);
+			void __island_raw_import__<Record<string, FC>>(src).then(hydrateIsland);
 		}
 	},
 );

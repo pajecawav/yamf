@@ -1,8 +1,8 @@
 import { stringify } from "devalue";
-import type { Component } from "solid-js";
+import type { Child, FC } from "hono/jsx";
 import type { ImportAssetsResultRaw } from "virtual:yamf:assets";
 
-declare module "solid-js" {
+declare module "hono/jsx" {
 	// eslint-disable-next-line @typescript-eslint/no-namespace
 	namespace JSX {
 		interface IntrinsicElements {
@@ -10,7 +10,7 @@ declare module "solid-js" {
 				"island-props"?: string;
 				"island-src": string;
 				"island-entry": string;
-				children: JSX.Element;
+				children: Child;
 				style?: JSX.CSSProperties;
 			};
 		}
@@ -18,11 +18,11 @@ declare module "solid-js" {
 }
 
 export const createIsland = (
-	Component: Component,
+	Component: FC,
 	exportName: string,
 	assets: ImportAssetsResultRaw,
-): Component => {
-	const ComponentWrapper: Component & { name: string } = props => {
+): FC => {
+	const ComponentWrapper: FC & { name: string } = props => {
 		if (!assets.entry) {
 			throw new Error(`Missing island entry for island ${Component.name}`);
 		}
