@@ -16,7 +16,7 @@ export type PageLoader<TLoaderData> = (
 
 export type PageRenderer<TLoaderData> = (
 	event: H3Event<EventHandlerRequest>,
-	params: { loaderData: TLoaderData; assets?: ImportAssetsResult },
+	params: { loaderData: TLoaderData },
 ) => Child | Promise<Child>;
 
 interface DefinePageOptions<TLoaderData> {

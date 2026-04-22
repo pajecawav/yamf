@@ -1,10 +1,11 @@
 import type { PageHandler } from "#/page";
 import type { EventHandlerRequest, EventHandlerWithFetch } from "nitro/h3";
-import { defineHandler, HTTPError } from "nitro/h3";
+import { defineHandler, HTTPError, writeEarlyHints } from "nitro/h3";
 import path from "node:path";
 import { addRoute, createRouter, findRoute } from "rou3";
 import { withLeadingSlash, withoutTrailingSlash } from "ufo";
-import { assets, pages } from "virtual:yamf:pages";
+import { clientAssets } from "virtual:yamf:assets";
+import { assets as serverAssets, pages } from "virtual:yamf:pages";
 
 interface Route {
 	handler: () => Promise<PageHandler>;
@@ -37,7 +38,7 @@ for (const [relativePath, handler] of Object.entries(pages).toSorted((a, b) =>
 
 	addRoute(router, "GET", route, {
 		handler,
-		serverAssets: assets[relativePath],
+		serverAssets: serverAssets[relativePath],
 	});
 }
 
@@ -53,6 +54,15 @@ export const defineServerEntry = (): EventHandlerWithFetch<
 		}
 
 		const { handler, serverAssets } = route.data;
+
+		const assets = serverAssets ? serverAssets.merge(clientAssets) : clientAssets;
+
+		await writeEarlyHints(event, {
+			link: [
+				...assets.js.map(script => `<${script.href}>; rel=modulepreload`),
+				...assets.css.map(style => `<${style.href}>; rel=preload; as=style`),
+			],
+		});
 
 		return (await handler())(event, { serverAssets });
 	});
