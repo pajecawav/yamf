@@ -2,12 +2,17 @@ import { SSRContext } from "#/context/ssr";
 import { useContext } from "hono/jsx";
 import { useHead as _useHead } from "unhead";
 import type { ClientUnhead } from "unhead/client";
+import { createHead } from "unhead/client";
 import type { ResolvableHead } from "unhead/types";
 
 declare global {
 	interface Window {
 		__UNHEAD__?: ClientUnhead;
 	}
+}
+
+if (!import.meta.env.SSR) {
+	window.__UNHEAD__ = createHead();
 }
 
 export const useHead = (input?: ResolvableHead): void => {
