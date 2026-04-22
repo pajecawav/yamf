@@ -5,6 +5,7 @@ import _traverse from "@babel/traverse";
 import {
 	callExpression,
 	exportDefaultDeclaration,
+	exportNamedDeclaration,
 	functionExpression,
 	identifier,
 	importDeclaration,
@@ -34,6 +35,8 @@ export const islands = (): Plugin[] => {
 					if (this.environment.name !== "ssr") {
 						return;
 					}
+
+					const seenExports = new Set<string>();
 
 					const ast = parse(code, {
 						sourceType: "module",
@@ -111,6 +114,50 @@ export const islands = (): Plugin[] => {
 									),
 								),
 							);
+						},
+						ExportNamedDeclaration(path) {
+							if (path.node.declaration?.type === "VariableDeclaration") {
+								const declaration = path.node.declaration.declarations.at(0);
+
+								if (
+									!declaration ||
+									declaration.id.type !== "Identifier" ||
+									seenExports.has(declaration.id.name)
+								) {
+									return;
+								}
+								const exportName = declaration.id.name;
+								seenExports.add(exportName);
+
+								const islandIdentifier = identifier(`__wrap_${exportName}`);
+
+								path.insertBefore(
+									variableDeclaration("const", [
+										variableDeclarator(islandIdentifier, declaration.init),
+									]),
+								);
+
+								path.replaceWith(
+									exportNamedDeclaration(
+										variableDeclaration("const", [
+											variableDeclarator(
+												identifier(exportName),
+												callExpression(
+													memberExpression(
+														identifier("__runtime"),
+														identifier("createIsland"),
+													),
+													[
+														islandIdentifier,
+														stringLiteral(exportName),
+														identifier("__assets"),
+													],
+												),
+											),
+										]),
+									),
+								);
+							}
 						},
 					});
 

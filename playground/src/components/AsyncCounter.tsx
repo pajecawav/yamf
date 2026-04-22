@@ -1,4 +1,4 @@
-import Counter, { type CounterProps } from "./Counter.island";
+import { Counter, type CounterProps } from "./Counter.island";
 
 interface AsyncCounterProps extends CounterProps {
 	delay?: number;

@@ -7,7 +7,7 @@ export interface CounterProps {
 	withTitle?: boolean;
 }
 
-export default function Counter(props: CounterProps) {
+export const Counter = (props: CounterProps) => {
 	const [value, setValue] = useState(props.initialValue ?? 0);
 
 	useHead(props.withTitle ? { title: `Counter: ${value}` } : undefined);
@@ -17,4 +17,14 @@ export default function Counter(props: CounterProps) {
 			{value}
 		</button>
 	);
-}
+};
+
+export const Doubler = (props: CounterProps) => {
+	const [value, setValue] = useState(props.initialValue ?? 0);
+
+	return (
+		<button class={styles.counter} onClick={() => setValue(value * 2)}>
+			{value}
+		</button>
+	);
+};
