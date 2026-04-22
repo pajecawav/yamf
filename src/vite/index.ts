@@ -15,15 +15,16 @@ const yamf = (): PluginOption[] => {
 				environments: {
 					ssr: {
 						build: {
+							cssCodeSplit: false,
 							rollupOptions: {
-								input: "./src/entry-server.tsx",
+								input: "/src/server.tsx",
 							},
 						},
 					},
 					client: {
 						build: {
 							rolldownOptions: {
-								input: ["./src/client/index.ts"],
+								input: ["/src/client/index.ts"],
 							},
 						},
 					},
@@ -40,7 +41,7 @@ const yamf = (): PluginOption[] => {
 	// TODO: extendable config
 	plugins.push(
 		nitro({
-			serverDir: "./src",
+			serverDir: "/src",
 			compressPublicAssets: {
 				gzip: true,
 				brotli: true,
