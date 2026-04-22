@@ -1,4 +1,6 @@
 export { definePage } from "./page";
 export type { PageHandler } from "./page";
 
-export type { ImportAssetsResultRaw, ImportAssetsResult } from "./shared/assets";
+export { useHead } from "./hooks/useHead";
+
+export type { ImportAssetsResult, ImportAssetsResultRaw } from "./shared/assets";

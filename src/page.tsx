@@ -3,9 +3,10 @@ import { renderToReadableStream } from "hono/jsx/streaming";
 import type { EventHandlerRequest, EventHandlerResponse, H3Event } from "nitro/h3";
 import type { Unhead } from "unhead/server";
 import { createStreamableHead, wrapStream } from "unhead/stream/server";
-import { clientAssets } from "virtual:yamf:assets";
-import type { ImportAssetsResult } from "./shared/assets";
 import type { ResolvableLink } from "unhead/types";
+import { clientAssets } from "virtual:yamf:assets";
+import { SSRContext } from "./context/ssr";
+import type { ImportAssetsResult } from "./shared/assets";
 
 export type PageHandler = (
 	event: H3Event<EventHandlerRequest>,
@@ -47,7 +48,9 @@ export const definePage = <TLoaderData = never,>({
 			script: [{ type: "module", src: assets.entry }],
 		});
 
-		const App = async () => <>{await render(event, { loaderData, head })}</>;
+		const App = async () => (
+			<SSRContext value={{ head }}>{await render(event, { loaderData, head })}</SSRContext>
+		);
 		const stream = wrapStream(head, renderToReadableStream(<App />), TEMPLATE);
 
 		return new Response(stream, {

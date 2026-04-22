@@ -9,5 +9,5 @@ export const AsyncCounter = async (props: AsyncCounterProps) => {
 		setTimeout(resolve, props.delay ?? 2000, props.initialValue),
 	);
 
-	return <Counter initialValue={props.initialValue} />;
+	return <Counter initialValue={props.initialValue} withTitle={props.withTitle} />;
 };

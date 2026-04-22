@@ -21,7 +21,7 @@ export default definePage({
 					</Suspense>
 
 					<Suspense fallback={<span>Loading...</span>}>
-						<AsyncCounter initialValue={7} delay={5000} />
+						<AsyncCounter initialValue={7} delay={5000} withTitle />
 					</Suspense>
 				</Container>
 

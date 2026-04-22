@@ -4,9 +4,7 @@ import { Container } from "~/components/Container";
 
 export default definePage({
 	loader: () => null,
-	render: (event, { head }) => {
-		head.push({ title: "YAMF Playground" });
-
+	render: event => {
 		return (
 			<>
 				<Container>

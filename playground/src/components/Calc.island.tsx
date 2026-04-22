@@ -1,8 +1,11 @@
 import { useState } from "hono/jsx";
+import { useHead } from "yamf";
 
 export default function Calc() {
 	const [a, setA] = useState(2);
 	const [b, setB] = useState(7);
+
+	useHead({ title: `${a} * ${b} = ${a * b}` });
 
 	return (
 		<p>
