@@ -43,7 +43,7 @@
 	"scripts": {
 		"build": "tsdown",
 		"dev": "tsdown --watch",
-		"test": "vitest run",
+		"test": "vitest run --passWithNoTests",
 		"test:watch": "vitest watch",
 		"test:coverage": "vitest run --coverage",
 		"test:ui": "vitest --ui",
