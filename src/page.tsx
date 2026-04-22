@@ -1,9 +1,11 @@
-import { html, raw } from "hono/html";
 import type { Child } from "hono/jsx";
 import { renderToReadableStream } from "hono/jsx/streaming";
 import type { EventHandlerRequest, EventHandlerResponse, H3Event } from "nitro/h3";
+import type { Unhead } from "unhead/server";
+import { createStreamableHead, wrapStream } from "unhead/stream/server";
+import { clientAssets } from "virtual:yamf:assets";
 import type { ImportAssetsResult } from "./shared/assets";
-import { SSRContext } from "./context/ssr";
+import type { ResolvableLink } from "unhead/types";
 
 export type PageHandler = (
 	event: H3Event<EventHandlerRequest>,
@@ -16,7 +18,7 @@ export type PageLoader<TLoaderData> = (
 
 export type PageRenderer<TLoaderData> = (
 	event: H3Event<EventHandlerRequest>,
-	params: { loaderData: TLoaderData },
+	params: { loaderData: TLoaderData; head: Unhead },
 ) => Child | Promise<Child>;
 
 interface DefinePageOptions<TLoaderData> {
@@ -24,24 +26,29 @@ interface DefinePageOptions<TLoaderData> {
 	render: PageRenderer<TLoaderData>;
 }
 
+const TEMPLATE = "<!DOCTYPE html><html><head></head><body></body></html>";
+
 export const definePage = <TLoaderData = never,>({
 	loader,
 	render,
 }: DefinePageOptions<TLoaderData>): PageHandler => {
-	return async (event, params) => {
+	return async (event, { serverAssets }) => {
 		const loaderData = await loader(event);
 
-		const Content = async () => <>{await render(event, { loaderData })}</>;
+		const assets = serverAssets ? clientAssets.merge(serverAssets) : clientAssets;
 
-		const app = (
-			<SSRContext value={{ serverAssets: params.serverAssets }}>
-				<Content />
-			</SSRContext>
-		);
+		const { head } = createStreamableHead({});
 
-		const docType = raw("<!DOCTYPE html>");
+		head.push({
+			link: [
+				...assets.js.map((attrs): ResolvableLink => ({ rel: "modulepreload", ...attrs })),
+				...assets.css.map((attrs): ResolvableLink => ({ rel: "stylesheet", ...attrs })),
+			],
+			script: [{ type: "module", src: assets.entry }],
+		});
 
-		const stream = renderToReadableStream(html`${docType}${app}`);
+		const App = async () => <>{await render(event, { loaderData, head })}</>;
+		const stream = wrapStream(head, renderToReadableStream(<App />), TEMPLATE);
 
 		return new Response(stream, {
 			headers: {
