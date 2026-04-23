@@ -1,21 +1,19 @@
-import { defineConfig, type InlineConfig, type UserConfig } from "tsdown";
+import { defineConfig, type UserConfig } from "tsdown";
 
-const getSharedOptions = (cfg: InlineConfig): UserConfig => ({
-	// TODO: figure out
-	watch: cfg.watch ? "./src" : false,
+const getSharedOptions = (): UserConfig => ({
 	deps: {
 		neverBundle: [/^virtual:/],
 	},
 });
 
-export default defineConfig(cfg => [
+export default defineConfig([
 	{
 		entry: "./src/vite/index.ts",
 		unbundle: true,
 		platform: "node",
 		outDir: "dist/vite",
 		tsconfig: "./tsconfig.lib.json",
-		...getSharedOptions(cfg),
+		...getSharedOptions(),
 	},
 	{
 		entry: "./src/server/index.ts",
@@ -23,13 +21,13 @@ export default defineConfig(cfg => [
 		platform: "node",
 		outDir: "dist/server",
 		tsconfig: "./tsconfig.lib.json",
-		...getSharedOptions(cfg),
+		...getSharedOptions(),
 	},
 	{
 		entry: ["./src/index.ts", "./src/client/index.ts"],
 		unbundle: true,
 		platform: "neutral",
 		tsconfig: "./tsconfig.lib.json",
-		...getSharedOptions(cfg),
+		...getSharedOptions(),
 	},
 ]);

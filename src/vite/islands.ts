@@ -66,7 +66,6 @@ export const islands = (): Plugin[] => {
 								),
 							);
 						},
-						// TODO: handle named exports
 						ExportDefaultDeclaration(path) {
 							const declarationType = path.node.declaration.type;
 
