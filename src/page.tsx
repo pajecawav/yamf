@@ -1,6 +1,7 @@
 import type { Child } from "hono/jsx";
 import { renderToReadableStream } from "hono/jsx/streaming";
 import type { EventHandlerRequest, EventHandlerResponse, H3Event } from "nitro/h3";
+import { HTTPResponse } from "nitro/h3";
 import type { Unhead } from "unhead/server";
 import { createStreamableHead, wrapStream } from "unhead/stream/server";
 import type { ResolvableLink } from "unhead/types";
@@ -13,29 +14,19 @@ export type PageHandler = (
 	params: { serverAssets?: ImportAssetsResult },
 ) => EventHandlerResponse;
 
-export type PageLoader<TLoaderData> = (
+export type PageRenderer = (
 	event: H3Event<EventHandlerRequest>,
-) => TLoaderData | Promise<TLoaderData>;
+	params: { head: Unhead },
+) => HTTPResponse | Promise<HTTPResponse> | Child | Promise<Child>;
 
-export type PageRenderer<TLoaderData> = (
-	event: H3Event<EventHandlerRequest>,
-	params: { loaderData: TLoaderData; head: Unhead },
-) => Child | Promise<Child>;
-
-interface DefinePageOptions<TLoaderData> {
-	loader: PageLoader<TLoaderData>;
-	render: PageRenderer<TLoaderData>;
+interface DefinePageOptions {
+	render: PageRenderer;
 }
 
 const TEMPLATE = "<!DOCTYPE html><html><head></head><body></body></html>";
 
-export const definePage = <TLoaderData = never,>({
-	loader,
-	render,
-}: DefinePageOptions<TLoaderData>): PageHandler => {
+export const definePage = ({ render }: DefinePageOptions): PageHandler => {
 	return async (event, { serverAssets }) => {
-		const loaderData = await loader(event);
-
 		const assets = serverAssets ? clientAssets.merge(serverAssets) : clientAssets;
 
 		const { head } = createStreamableHead({});
@@ -48,9 +39,13 @@ export const definePage = <TLoaderData = never,>({
 			script: [{ type: "module", src: assets.entry }],
 		});
 
-		const App = async () => (
-			<SSRContext value={{ head }}>{await render(event, { loaderData, head })}</SSRContext>
-		);
+		const content = await render(event, { head });
+
+		if (content instanceof HTTPResponse) {
+			return content;
+		}
+
+		const App = async () => <SSRContext value={{ head }}>{content}</SSRContext>;
 		const stream = wrapStream(head, renderToReadableStream(<App />), TEMPLATE);
 
 		return new Response(stream, {

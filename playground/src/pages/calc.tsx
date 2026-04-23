@@ -3,7 +3,6 @@ import Calc from "~/components/Calc.island";
 import { Container } from "~/components/Container";
 
 export default definePage({
-	loader: () => null,
 	render: event => {
 		return (
 			<>
