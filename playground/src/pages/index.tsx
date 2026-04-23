@@ -2,7 +2,7 @@ import { Suspense } from "hono/jsx";
 import { definePage } from "yamf";
 import { AsyncCounter } from "~/components/AsyncCounter";
 import { Container } from "~/components/Container";
-import { Counter, Doubler } from "~/components/Counter.island";
+import { Counter, Doubler, Tripler } from "~/components/Counter.island";
 
 export default definePage({
 	loader: () => null,
@@ -16,12 +16,14 @@ export default definePage({
 
 					<Doubler initialValue={2} />
 
+					<Tripler initialValue={3} />
+
 					<Suspense fallback={<span>Loading...</span>}>
 						<AsyncCounter initialValue={3} />
 					</Suspense>
 
 					<Suspense fallback={<span>Loading...</span>}>
-						<AsyncCounter initialValue={7} delay={5000} withTitle />
+						<AsyncCounter initialValue={7} delay={3500} withTitle />
 					</Suspense>
 				</Container>
 

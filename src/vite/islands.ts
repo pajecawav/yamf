@@ -6,6 +6,7 @@ import {
 	callExpression,
 	exportDefaultDeclaration,
 	exportNamedDeclaration,
+	functionDeclaration,
 	functionExpression,
 	identifier,
 	importDeclaration,
@@ -135,6 +136,51 @@ export const islands = (): Plugin[] => {
 									variableDeclaration("const", [
 										variableDeclarator(islandIdentifier, declaration.init),
 									]),
+								);
+
+								path.replaceWith(
+									exportNamedDeclaration(
+										variableDeclaration("const", [
+											variableDeclarator(
+												identifier(exportName),
+												callExpression(
+													memberExpression(
+														identifier("__runtime"),
+														identifier("createIsland"),
+													),
+													[
+														islandIdentifier,
+														stringLiteral(exportName),
+														identifier("__assets"),
+													],
+												),
+											),
+										]),
+									),
+								);
+							} else if (path.node.declaration?.type === "FunctionDeclaration") {
+								const declaration = path.node.declaration;
+
+								if (
+									!declaration ||
+									declaration.id?.type !== "Identifier" ||
+									seenExports.has(declaration.id.name)
+								) {
+									return;
+								}
+								const exportName = declaration.id.name;
+								seenExports.add(exportName);
+
+								const islandIdentifier = identifier(`__wrap_${exportName}`);
+
+								path.insertBefore(
+									functionDeclaration(
+										islandIdentifier,
+										declaration.params,
+										declaration.body,
+										declaration.generator,
+										declaration.async,
+									),
 								);
 
 								path.replaceWith(

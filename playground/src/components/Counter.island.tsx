@@ -28,3 +28,13 @@ export const Doubler = (props: CounterProps) => {
 		</button>
 	);
 };
+
+export function Tripler(props: CounterProps) {
+	const [value, setValue] = useState(props.initialValue ?? 0);
+
+	return (
+		<button class={styles.counter} onClick={() => setValue(value * 3)}>
+			{value}
+		</button>
+	);
+}
