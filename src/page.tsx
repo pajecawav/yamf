@@ -23,7 +23,13 @@ interface DefinePageOptions {
 	render: PageRenderer;
 }
 
-const TEMPLATE = "<!DOCTYPE html><html><head></head><body></body></html>";
+const TEMPLATE = /* html */ `
+<!DOCTYPE html>
+<html>
+    <head></head>
+    <body></body>
+</html>
+`.trim();
 
 export const definePage = ({ render }: DefinePageOptions): PageHandler => {
 	return async (event, { serverAssets }) => {

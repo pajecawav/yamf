@@ -26,6 +26,7 @@
 
 		"declaration": true,
 		"isolatedDeclarations": true,
+		"declarationMap": true,
 
 		"allowJs": false,
 		"esModuleInterop": true,

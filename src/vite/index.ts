@@ -42,6 +42,7 @@ const yamf = (): PluginOption[] => {
 	plugins.push(
 		nitro({
 			serverDir: "/src",
+			renderer: false,
 			compressPublicAssets: {
 				gzip: true,
 				brotli: true,
