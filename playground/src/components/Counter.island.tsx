@@ -1,8 +1,8 @@
 import { useState } from "hono/jsx";
-import { useHead } from "yamf";
+import { useHead, type IslandProps } from "yamf";
 import styles from "./Counter.module.css";
 
-export interface CounterProps {
+export interface CounterProps extends IslandProps {
 	initialValue?: number;
 	withTitle?: boolean;
 }

@@ -1,6 +1,7 @@
 import type { ImportAssetsResultRaw } from "#/shared/assets";
 import { stringify } from "devalue";
 import type { Child, FC } from "hono/jsx";
+import type { IslandClientDirective } from "./types";
 
 declare module "hono/jsx" {
 	// eslint-disable-next-line @typescript-eslint/no-namespace
@@ -10,6 +11,7 @@ declare module "hono/jsx" {
 				"island-props"?: string;
 				"island-src": string;
 				"island-entry": string;
+				"island-client": IslandClientDirective;
 				children: Child;
 				style?: JSX.CSSProperties;
 			};
@@ -32,6 +34,7 @@ export const createIsland = (
 				island-props={stringify(props)}
 				island-src={assets.entry}
 				island-entry={exportName}
+				island-client={props["yamf-client"] as IslandClientDirective}
 				// TODO: export CSS?
 				style={{ display: "contents" }}
 			>
