@@ -1,3 +1,4 @@
+import type { NitroPluginConfig } from "nitro/vite";
 import { nitro } from "nitro/vite";
 import type { PluginOption } from "vite";
 import { islands } from "./islands";
@@ -5,7 +6,11 @@ import { virtualAssets } from "./virtual-assets";
 import { virtualPages } from "./virtual-pages";
 import { virtualTemplate } from "./virtual-template";
 
-const yamf = (): PluginOption[] => {
+export interface YamfOptions {
+	nitro?: NitroPluginConfig;
+}
+
+const yamf = (options?: YamfOptions): PluginOption[] => {
 	const plugins: PluginOption[] = [];
 
 	// TODO: extendable config
@@ -40,22 +45,24 @@ const yamf = (): PluginOption[] => {
 	plugins.push(virtualPages());
 	plugins.push(virtualTemplate());
 
-	// TODO: extendable config
 	plugins.push(
 		nitro({
-			serverDir: "/src",
-			renderer: false,
-			compressPublicAssets: {
-				gzip: true,
-				brotli: true,
-			},
-			publicAssets: [
-				{
-					baseURL: "assets",
-					dir: "./public/assets",
-					maxAge: 365 * 24 * 60 * 60,
+			extends: {
+				serverDir: "/src",
+				renderer: false,
+				compressPublicAssets: {
+					gzip: true,
+					brotli: true,
 				},
-			],
+				publicAssets: [
+					{
+						baseURL: "assets",
+						dir: "./public/assets",
+						maxAge: 365 * 24 * 60 * 60,
+					},
+				],
+			},
+			...options?.nitro,
 		}),
 	);
 
