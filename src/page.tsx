@@ -4,14 +4,15 @@ import type { EventHandlerRequest, EventHandlerResponse, H3Event } from "nitro/h
 import { HTTPResponse } from "nitro/h3";
 import type { Unhead } from "unhead/server";
 import { createStreamableHead, wrapStream } from "unhead/stream/server";
-import type { ResolvableLink } from "unhead/types";
+import type { ResolvableHead, ResolvableLink } from "unhead/types";
 import { clientAssets } from "virtual:yamf:assets";
+import { template } from "virtual:yamf:template";
 import { SSRContext } from "./context/ssr";
 import type { ImportAssetsResult } from "./shared/assets";
 
 export type PageHandler = (
 	event: H3Event<EventHandlerRequest>,
-	params: { serverAssets?: ImportAssetsResult },
+	params: { serverAssets?: ImportAssetsResult; head?: ResolvableHead },
 ) => EventHandlerResponse;
 
 export type PageRenderer = (
@@ -23,19 +24,11 @@ interface DefinePageOptions {
 	render: PageRenderer;
 }
 
-const TEMPLATE = /* html */ `
-<!DOCTYPE html>
-<html>
-    <head></head>
-    <body></body>
-</html>
-`.trim();
-
 export const definePage = ({ render }: DefinePageOptions): PageHandler => {
-	return async (event, { serverAssets }) => {
+	return async (event, { serverAssets, head: headInit }) => {
 		const assets = serverAssets ? clientAssets.merge(serverAssets) : clientAssets;
 
-		const { head } = createStreamableHead({});
+		const { head } = createStreamableHead({ init: [headInit] });
 
 		head.push({
 			link: [
@@ -52,7 +45,7 @@ export const definePage = ({ render }: DefinePageOptions): PageHandler => {
 		}
 
 		const App = async () => <SSRContext value={{ head }}>{content}</SSRContext>;
-		const stream = wrapStream(head, renderToReadableStream(<App />), TEMPLATE);
+		const stream = wrapStream(head, renderToReadableStream(<App />), template);
 
 		return new Response(stream, {
 			headers: {

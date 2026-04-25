@@ -3,6 +3,7 @@ import type { PluginOption } from "vite";
 import { islands } from "./islands";
 import { virtualAssets } from "./virtual-assets";
 import { virtualPages } from "./virtual-pages";
+import { virtualTemplate } from "./virtual-template";
 
 const yamf = (): PluginOption[] => {
 	const plugins: PluginOption[] = [];
@@ -37,6 +38,7 @@ const yamf = (): PluginOption[] => {
 
 	plugins.push(virtualAssets());
 	plugins.push(virtualPages());
+	plugins.push(virtualTemplate());
 
 	// TODO: extendable config
 	plugins.push(

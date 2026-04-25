@@ -4,8 +4,9 @@ import { defineHandler, HTTPError, writeEarlyHints } from "nitro/h3";
 import path from "node:path";
 import { addRoute, createRouter, findRoute } from "rou3";
 import { withLeadingSlash, withoutTrailingSlash } from "ufo";
+import type { ResolvableHead } from "unhead/types";
 import { clientAssets } from "virtual:yamf:assets";
-import { assets as serverAssets, pages } from "virtual:yamf:pages";
+import { pages, assets as serverAssets } from "virtual:yamf:pages";
 
 interface Route {
 	handler: () => Promise<PageHandler>;
@@ -42,10 +43,13 @@ for (const [relativePath, handler] of Object.entries(pages).toSorted((a, b) =>
 	});
 }
 
-export const defineServerEntry = (): EventHandlerWithFetch<
-	EventHandlerRequest,
-	Promise<unknown>
-> => {
+export type ServerEntry = EventHandlerWithFetch<EventHandlerRequest, Promise<unknown>>;
+
+export interface DefineServerEntryOptions {
+	head?: ResolvableHead;
+}
+
+export const defineServerEntry = (options?: DefineServerEntryOptions): ServerEntry => {
 	return defineHandler(async event => {
 		const route = findRoute(router, "GET", event.url.pathname);
 
@@ -64,6 +68,6 @@ export const defineServerEntry = (): EventHandlerWithFetch<
 			],
 		});
 
-		return (await handler())(event, { serverAssets });
+		return (await handler())(event, { serverAssets, head: options?.head });
 	});
 };

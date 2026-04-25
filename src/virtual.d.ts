@@ -11,3 +11,7 @@ declare module "virtual:yamf:pages" {
 
 	export const assets: Record<string, ImportAssetsResult>;
 }
+
+declare module "virtual:yamf:template" {
+	export const template: string;
+}
