@@ -1,5 +1,6 @@
 import type { Child } from "hono/jsx";
 import { renderToReadableStream } from "hono/jsx/streaming";
+import { Hono } from "hono/tiny";
 import type { EventHandlerRequest, EventHandlerResponse, H3Event } from "nitro/h3";
 import { HTTPResponse } from "nitro/h3";
 import type { Unhead } from "unhead/server";
@@ -9,6 +10,7 @@ import { clientAssets } from "virtual:yamf:assets";
 import { template } from "virtual:yamf:template";
 import { SSRContext } from "./context/ssr";
 import type { ImportAssetsResult } from "./shared/assets";
+import { transformHtmlTemplate } from "unhead/server";
 
 export type PageHandler = (
 	event: H3Event<EventHandlerRequest>,
@@ -22,9 +24,10 @@ export type PageRenderer = (
 
 interface DefinePageOptions {
 	render: PageRenderer;
+	stream?: boolean;
 }
 
-export const definePage = ({ render }: DefinePageOptions): PageHandler => {
+export const definePage = (options: DefinePageOptions): PageHandler => {
 	return async (event, { serverAssets, head: headInit }) => {
 		const assets = serverAssets ? clientAssets.merge(serverAssets) : clientAssets;
 
@@ -38,19 +41,41 @@ export const definePage = ({ render }: DefinePageOptions): PageHandler => {
 			script: [{ type: "module", src: assets.entry }],
 		});
 
-		const content = await render(event, { head });
+		const content = await options.render(event, { head });
 
 		if (content instanceof HTTPResponse) {
 			return content;
 		}
 
 		const App = async () => <SSRContext value={{ head }}>{content}</SSRContext>;
-		const stream = wrapStream(head, renderToReadableStream(<App />), template);
 
-		return new Response(stream, {
+		const responseInit = {
 			headers: {
 				"Content-Type": "text/html; charset=utf-8",
 			},
-		});
+		};
+
+		if (options.stream === false) {
+			// TODO: figure out how expensive this is
+			return new Hono()
+				.get("/", async c => {
+					const response = await c.html(<App />);
+
+					let html = await response.text();
+
+					// TODO: figure out why head is broken
+					html = transformHtmlTemplate(
+						head,
+						template.replace("<!--ssr-outlet-->", html ?? ""),
+					);
+
+					return new Response(html, responseInit);
+				})
+				.request("/");
+		}
+
+		const stream = wrapStream(head, renderToReadableStream(<App />), template);
+
+		return new Response(stream, responseInit);
 	};
 };

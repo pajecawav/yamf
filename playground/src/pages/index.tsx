@@ -6,7 +6,12 @@ import { Counter, Doubler, Tripler } from "~/components/Counter.island";
 
 export default definePage({
 	render: (event, { head }) => {
-		head.push({ title: "YAMF Playground" });
+		head.push({
+			title: "YAMF Playground",
+			bodyAttrs: {
+				class: "tteesstt",
+			},
+		});
 
 		return (
 			<>
