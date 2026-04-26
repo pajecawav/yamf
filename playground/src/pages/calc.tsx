@@ -4,7 +4,6 @@ import Calc from "~/components/Calc.island";
 import { Container } from "~/components/Container";
 
 export default definePage({
-	stream: false,
 	render: event => {
 		return (
 			<>

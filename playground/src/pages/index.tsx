@@ -5,6 +5,7 @@ import { Container } from "~/components/Container";
 import { Counter, Doubler, Tripler } from "~/components/Counter.island";
 
 export default definePage({
+	stream: true,
 	render: (event, { head }) => {
 		head.push({
 			title: "YAMF Playground",

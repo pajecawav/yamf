@@ -55,7 +55,7 @@ export const definePage = (options: DefinePageOptions): PageHandler => {
 			},
 		};
 
-		if (options.stream === false) {
+		if (!options.stream) {
 			// TODO: figure out how expensive this is
 			return new Hono()
 				.get("/", async c => {
