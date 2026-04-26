@@ -1,4 +1,5 @@
 import type { PageHandler } from "#/page";
+import type { FC, PropsWithChildren } from "hono/jsx";
 import type { EventHandlerRequest, EventHandlerWithFetch } from "nitro/h3";
 import { defineHandler, HTTPError, writeEarlyHints } from "nitro/h3";
 import path from "node:path";
@@ -47,6 +48,7 @@ export type ServerEntry = EventHandlerWithFetch<EventHandlerRequest, Promise<unk
 
 export interface DefineServerEntryOptions {
 	head?: ResolvableHead;
+	Layout?: FC<PropsWithChildren>;
 }
 
 export const defineServerEntry = (options?: DefineServerEntryOptions): ServerEntry => {
@@ -68,6 +70,10 @@ export const defineServerEntry = (options?: DefineServerEntryOptions): ServerEnt
 			],
 		});
 
-		return (await handler())(event, { serverAssets, head: options?.head });
+		return (await handler())(event, {
+			serverAssets,
+			head: options?.head,
+			Layout: options?.Layout,
+		});
 	});
 };

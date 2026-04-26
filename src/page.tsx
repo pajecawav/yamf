@@ -1,20 +1,25 @@
-import type { Child } from "hono/jsx";
+import type { Child, FC, PropsWithChildren } from "hono/jsx";
+import { Fragment } from "hono/jsx";
 import { renderToReadableStream } from "hono/jsx/streaming";
 import { Hono } from "hono/tiny";
 import type { EventHandlerRequest, EventHandlerResponse, H3Event } from "nitro/h3";
 import { HTTPResponse } from "nitro/h3";
 import type { Unhead } from "unhead/server";
+import { transformHtmlTemplate } from "unhead/server";
 import { createStreamableHead, wrapStream } from "unhead/stream/server";
 import type { ResolvableHead, ResolvableLink } from "unhead/types";
 import { clientAssets } from "virtual:yamf:assets";
 import { template } from "virtual:yamf:template";
 import { SSRContext } from "./context/ssr";
 import type { ImportAssetsResult } from "./shared/assets";
-import { transformHtmlTemplate } from "unhead/server";
 
 export type PageHandler = (
 	event: H3Event<EventHandlerRequest>,
-	params: { serverAssets?: ImportAssetsResult; head?: ResolvableHead },
+	params: {
+		serverAssets?: ImportAssetsResult;
+		head?: ResolvableHead;
+		Layout?: FC<PropsWithChildren>;
+	},
 ) => EventHandlerResponse;
 
 export type PageRenderer = (
@@ -25,10 +30,11 @@ export type PageRenderer = (
 interface DefinePageOptions {
 	render: PageRenderer;
 	stream?: boolean;
+	Layout?: FC<PropsWithChildren>;
 }
 
 export const definePage = (options: DefinePageOptions): PageHandler => {
-	return async (event, { serverAssets, head: headInit }) => {
+	return async (event, { serverAssets, head: headInit, Layout = options.Layout ?? Fragment }) => {
 		const assets = serverAssets ? clientAssets.merge(serverAssets) : clientAssets;
 
 		const { head } = createStreamableHead({ init: [headInit] });
@@ -47,7 +53,11 @@ export const definePage = (options: DefinePageOptions): PageHandler => {
 			return content;
 		}
 
-		const App = async () => <SSRContext value={{ head }}>{content}</SSRContext>;
+		const App = async () => (
+			<SSRContext value={{ head }}>
+				<Layout>{content}</Layout>
+			</SSRContext>
+		);
 
 		const responseInit = {
 			headers: {

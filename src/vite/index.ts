@@ -21,6 +21,7 @@ const yamf = (options?: YamfOptions): PluginOption[] => {
 				environments: {
 					ssr: {
 						build: {
+							// TODO: figure out if this should be true
 							cssCodeSplit: false,
 							rollupOptions: {
 								input: "/src/server.tsx",
