@@ -31,7 +31,7 @@ const yamf = (options?: YamfOptions): PluginOption[] => {
 					client: {
 						build: {
 							rolldownOptions: {
-								input: ["/src/client/index.ts"],
+								input: "/src/client/index.ts",
 							},
 						},
 					},
@@ -48,22 +48,20 @@ const yamf = (options?: YamfOptions): PluginOption[] => {
 
 	plugins.push(
 		nitro({
-			extends: {
-				serverDir: "/src",
-				renderer: false,
-				compressPublicAssets: {
-					gzip: true,
-					brotli: true,
-				},
-				publicAssets: [
-					{
-						baseURL: "assets",
-						dir: "./public/assets",
-						maxAge: 365 * 24 * 60 * 60,
-					},
-				],
-			},
+			serverDir: "/src",
+			renderer: false,
 			...options?.nitro,
+			compressPublicAssets: {
+				gzip: true,
+				brotli: true,
+			},
+			publicAssets: [
+				{
+					baseURL: "assets",
+					dir: "./public/assets",
+					maxAge: 365 * 24 * 60 * 60,
+				},
+			],
 		}),
 	);
 
