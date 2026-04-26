@@ -1,6 +1,9 @@
 import { readFile } from "node:fs/promises";
+import { relative } from "node:path";
 import type { Plugin } from "vite";
 import { js } from "../shared/utils";
+
+const TEMPLATE_PATH = "./src/template.html";
 
 const DEFAULT_TEMPLATE = /* html */ `
 <!DOCTYPE html>
@@ -32,7 +35,7 @@ export const virtualTemplate = (): Plugin => {
 			}
 
 			try {
-				const template = await readFile("./src/template.html", "utf8");
+				const template = await readFile(TEMPLATE_PATH, "utf8");
 
 				return js`export const template = ${JSON.stringify(template)};`;
 			} catch (error) {
@@ -43,6 +46,18 @@ export const virtualTemplate = (): Plugin => {
 				}
 
 				throw error;
+			}
+		},
+		handleHotUpdate({ file, server }) {
+			if (relative(file, TEMPLATE_PATH) === "") {
+				const mod = server.moduleGraph.getModuleById(resolvedVirtualModuleId);
+
+				if (mod) {
+					server.moduleGraph.invalidateModule(mod);
+				}
+
+				// TODO: should reload?
+				// server.ws.send({ type: "full-reload" });
 			}
 		},
 	};
