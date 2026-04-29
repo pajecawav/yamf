@@ -1,6 +1,7 @@
 import type { NitroPluginConfig } from "nitro/vite";
 import { nitro } from "nitro/vite";
-import type { PluginOption } from "vite";
+import { existsSync } from "node:fs";
+import type { EnvironmentOptions, PluginOption } from "vite";
 import { islands } from "./islands";
 import { virtualAssets } from "./virtual-assets";
 import { virtualPages } from "./virtual-pages";
@@ -17,17 +18,19 @@ const yamf = (options?: YamfOptions): PluginOption[] => {
 	plugins.push({
 		name: "yamf:config",
 		config() {
+			const ssrEnv: EnvironmentOptions = {
+				build: {
+					// TODO: figure out if this should be true
+					cssCodeSplit: false,
+					rollupOptions: {
+						input: "/src/server.tsx",
+					},
+				},
+			};
+
 			return {
 				environments: {
-					ssr: {
-						build: {
-							// TODO: figure out if this should be true
-							cssCodeSplit: false,
-							rollupOptions: {
-								input: "/src/server.tsx",
-							},
-						},
-					},
+					...(existsSync("/src/server.tsx") ? { ssr: ssrEnv } : {}),
 					client: {
 						build: {
 							rolldownOptions: {
