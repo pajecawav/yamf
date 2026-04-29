@@ -21,7 +21,7 @@ export const virtualAssets = (): Plugin => {
 			}
 
 			return js`
-import clientAssets from "/src/client/index.ts?assets=client";
+import clientAssets from "./src/client/index.ts?assets=client";
 
 export { clientAssets };
 `.trim();

@@ -23,18 +23,18 @@ const yamf = (options?: YamfOptions): PluginOption[] => {
 					// TODO: figure out if this should be true
 					cssCodeSplit: false,
 					rollupOptions: {
-						input: "/src/server.tsx",
+						input: "./src/server.tsx",
 					},
 				},
 			};
 
 			return {
 				environments: {
-					...(existsSync("/src/server.tsx") ? { ssr: ssrEnv } : {}),
+					...(existsSync("./src/server.tsx") ? { ssr: ssrEnv } : {}),
 					client: {
 						build: {
 							rolldownOptions: {
-								input: "/src/client/index.ts",
+								input: "./src/client/index.ts",
 							},
 						},
 					},
@@ -51,7 +51,7 @@ const yamf = (options?: YamfOptions): PluginOption[] => {
 
 	plugins.push(
 		nitro({
-			serverDir: "/src",
+			serverDir: "./src",
 			renderer: false,
 			...options?.nitro,
 			compressPublicAssets: {
