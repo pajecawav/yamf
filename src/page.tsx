@@ -3,7 +3,7 @@ import { Fragment } from "hono/jsx";
 import { renderToReadableStream } from "hono/jsx/streaming";
 import { Hono } from "hono/tiny";
 import type { EventHandlerRequest, EventHandlerResponse, H3Event } from "nitro/h3";
-import { HTTPResponse } from "nitro/h3";
+import { HTTPResponse, withServerTiming } from "nitro/h3";
 import type { Unhead } from "unhead/server";
 import { transformHtmlTemplate } from "unhead/server";
 import { createStreamableHead, wrapStream } from "unhead/stream/server";
@@ -68,19 +68,20 @@ export const definePage = (options: DefinePageOptions): PageHandler => {
 		if (!options.stream) {
 			// TODO: figure out how expensive this is
 			return new Hono()
-				.get("/", async c => {
-					const response = await c.html(<App />);
+				.get("/", async c =>
+					withServerTiming(event, "#render", async () => {
+						const response = await c.html(<App />);
 
-					let html = await response.text();
+						let html = await response.text();
 
-					// TODO: figure out why head is broken
-					html = transformHtmlTemplate(
-						head,
-						template.replace("<!--ssr-outlet-->", html ?? ""),
-					);
+						html = transformHtmlTemplate(
+							head,
+							template.replace("<!--ssr-outlet-->", html ?? ""),
+						);
 
-					return new Response(html, responseInit);
-				})
+						return new Response(html, responseInit);
+					}),
+				)
 				.request("/");
 		}
 
