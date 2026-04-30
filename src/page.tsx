@@ -54,7 +54,7 @@ export const definePage = (options: DefinePageOptions): PageHandler => {
 		}
 
 		const App = async () => (
-			<SSRContext value={{ head }}>
+			<SSRContext value={{ head, event }}>
 				<Layout>{content}</Layout>
 			</SSRContext>
 		);

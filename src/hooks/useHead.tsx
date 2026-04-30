@@ -1,5 +1,4 @@
-import { SSRContext } from "#/context/ssr";
-import { useContext } from "hono/jsx";
+import { useSSRContext } from "#/context/ssr";
 import { useHead as _useHead } from "unhead";
 import type { ClientUnhead } from "unhead/client";
 import { createHead } from "unhead/client";
@@ -17,7 +16,7 @@ if (!import.meta.env.SSR) {
 
 export const useHead = (input?: ResolvableHead): void => {
 	if (import.meta.env.SSR) {
-		const ctx = useContext(SSRContext);
+		const ctx = useSSRContext();
 
 		if (ctx?.head) {
 			_useHead(ctx.head, input);
