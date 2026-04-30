@@ -29,6 +29,15 @@ const yamf = (options?: YamfOptions): PluginOption[] => {
 			};
 
 			return {
+				optimizeDeps: {
+					include: [
+						"hono",
+						"hono/jsx/dom/client",
+						"hono/jsx/jsx-runtime",
+						"devalue",
+						"ufo",
+					],
+				},
 				environments: {
 					...(existsSync("./src/server.tsx") ? { ssr: ssrEnv } : {}),
 					client: {
