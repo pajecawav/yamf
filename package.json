@@ -13,22 +13,10 @@
 		"url": "https://github.com/pajecawav/yamf/issues"
 	},
 	"exports": {
-		".": {
-			"types": "./dist/index.d.ts",
-			"default": "./dist/index.js"
-		},
-		"./vite": {
-			"types": "./dist/vite/index.d.mts",
-			"default": "./dist/vite/index.mjs"
-		},
-		"./client": {
-			"types": "./dist/client/index.d.ts",
-			"default": "./dist/client/index.js"
-		},
-		"./server": {
-			"types": "./dist/server/index.d.mts",
-			"default": "./dist/server/index.mjs"
-		},
+		".": "./dist/index.js",
+		"./vite": "./dist/vite/index.mjs",
+		"./client": "./dist/client/index.js",
+		"./server": "./dist/server/index.mjs",
 		"./package.json": "./package.json"
 	},
 	"main": "./dist/index.js",
