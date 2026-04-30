@@ -60,6 +60,7 @@ export const defineServerEntry = (options?: DefineServerEntryOptions): ServerEnt
 		}
 
 		const { handler, serverAssets } = route.data;
+		event.context.params = route.params;
 
 		const assets = serverAssets ? serverAssets.merge(clientAssets) : clientAssets;
 
