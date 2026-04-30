@@ -1,6 +1,6 @@
 import type { PageHandler } from "#/page";
 import type { FC, PropsWithChildren } from "hono/jsx";
-import type { EventHandlerRequest, EventHandlerWithFetch } from "nitro/h3";
+import type { EventHandlerRequest, EventHandlerWithFetch, H3Event } from "nitro/h3";
 import { defineHandler, HTTPError, writeEarlyHints } from "nitro/h3";
 import path from "node:path";
 import { addRoute, createRouter, findRoute } from "rou3";
@@ -47,7 +47,7 @@ for (const [relativePath, handler] of Object.entries(pages).toSorted((a, b) =>
 export type ServerEntry = EventHandlerWithFetch<EventHandlerRequest, Promise<unknown>>;
 
 export interface DefineServerEntryOptions {
-	head?: ResolvableHead;
+	head?: ResolvableHead | ((event: H3Event<EventHandlerRequest>) => ResolvableHead);
 	Layout?: FC<PropsWithChildren>;
 }
 
@@ -72,7 +72,7 @@ export const defineServerEntry = (options?: DefineServerEntryOptions): ServerEnt
 
 		return (await handler())(event, {
 			serverAssets,
-			head: options?.head,
+			head: typeof options?.head === "function" ? options.head(event) : options?.head,
 			Layout: options?.Layout,
 		});
 	});

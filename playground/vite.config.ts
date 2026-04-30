@@ -3,6 +3,7 @@ import yamf from "yamf/vite";
 
 export default defineConfig({
 	optimizeDeps: {
+		// TODO: is this needed?
 		exclude: ["yamf"],
 	},
 	plugins: [
