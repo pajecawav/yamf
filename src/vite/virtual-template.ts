@@ -39,8 +39,6 @@ export const virtualTemplate = (): Plugin => {
 
 				return js`export const template = ${JSON.stringify(template)};`;
 			} catch (error) {
-				console.log(error);
-
 				if (error instanceof Error && "code" in error && error.code === "ENOENT") {
 					return js`export const template = ${JSON.stringify(DEFAULT_TEMPLATE)};`;
 				}
