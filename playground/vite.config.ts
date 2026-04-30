@@ -5,7 +5,13 @@ export default defineConfig({
 	optimizeDeps: {
 		exclude: ["yamf"],
 	},
-	plugins: [yamf()],
+	plugins: [
+		yamf({
+			nitro: {
+				errorHandler: "./src/error.ts",
+			},
+		}),
+	],
 	build: {
 		sourcemap: true,
 	},
