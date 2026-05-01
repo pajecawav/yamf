@@ -52,7 +52,7 @@ export const islands = (): Plugin[] => {
 								"body",
 								importDeclaration(
 									[importNamespaceSpecifier(identifier("__runtime"))],
-									stringLiteral("yamf/server"),
+									stringLiteral("@pajecawav/yamf/server"),
 								),
 							);
 

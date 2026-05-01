@@ -1,5 +1,5 @@
 import { useState } from "hono/jsx";
-import { useHead, type IslandProps } from "yamf";
+import { useHead, type IslandProps } from "@pajecawav/yamf";
 import styles from "./Counter.module.css";
 
 export interface CounterProps extends IslandProps {

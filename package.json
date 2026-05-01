@@ -1,5 +1,5 @@
 {
-	"name": "yamf",
+	"name": "@pajecawav/yamf",
 	"type": "module",
 	"version": "0.0.1",
 	"description": "Yet another meta framework",

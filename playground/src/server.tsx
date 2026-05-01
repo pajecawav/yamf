@@ -1,4 +1,4 @@
-import { defineServerEntry } from "yamf/server";
+import { defineServerEntry } from "@pajecawav/yamf/server";
 import { Layout } from "./components/Layout";
 
 export default defineServerEntry({

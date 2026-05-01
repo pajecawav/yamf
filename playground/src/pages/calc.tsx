@@ -1,4 +1,4 @@
-import { definePage } from "yamf";
+import { definePage } from "@pajecawav/yamf";
 import { AsyncCounter } from "~/components/AsyncCounter";
 import Calc from "~/components/Calc.island";
 import { Container } from "~/components/Container";

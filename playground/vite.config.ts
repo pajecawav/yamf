@@ -1,10 +1,10 @@
 import { defineConfig } from "vite";
-import yamf from "yamf/vite";
+import yamf from "@pajecawav/yamf/vite";
 
 export default defineConfig({
 	optimizeDeps: {
 		// TODO: is this needed?
-		exclude: ["yamf"],
+		exclude: ["@pajecawav/yamf"],
 	},
 	plugins: [
 		yamf({
