@@ -21,7 +21,6 @@ export const virtualTemplate = (): Plugin => {
 
 	return {
 		name: "yamf:virtual-template",
-		enforce: "pre",
 		resolveId(id) {
 			if (id === virtualModuleId) {
 				return resolvedVirtualModuleId;

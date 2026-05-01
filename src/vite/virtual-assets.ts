@@ -7,7 +7,6 @@ export const virtualAssets = (): Plugin => {
 
 	return {
 		name: "yamf:virtual-assets",
-		enforce: "pre",
 		resolveId(id) {
 			if (id === virtualModuleId) {
 				return resolvedVirtualModuleId;

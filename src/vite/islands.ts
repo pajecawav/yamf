@@ -29,7 +29,6 @@ export const islands = (): Plugin[] => {
 	return [
 		{
 			name: "yamf:islands",
-			// enforce: "pre",
 			transform: {
 				filter: { id: ISLAND_REGEX },
 				handler(code, id) {

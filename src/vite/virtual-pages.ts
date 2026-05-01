@@ -7,7 +7,6 @@ export const virtualPages = (): Plugin => {
 
 	return {
 		name: "yamf:virtual-pages",
-		enforce: "pre",
 		resolveId(id) {
 			if (id === virtualModuleId) {
 				return resolvedVirtualModuleId;
