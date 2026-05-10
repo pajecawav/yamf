@@ -1,7 +1,7 @@
 {
 	"name": "@pajecawav/yamf",
 	"type": "module",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"description": "Yet another meta framework",
 	"license": "MIT",
 	"homepage": "https://github.com/pajecawav/yamf#readme",
