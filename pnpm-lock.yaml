@@ -37,8 +37,8 @@ importers:
         version: 3.1.0(vite@8.0.11(@types/node@24.12.3)(esbuild@0.27.3)(jiti@2.6.1)(yaml@2.8.3))
     devDependencies:
       '@pajecawav/tools':
-        specifier: ^0.0.2
-        version: 0.0.2(jiti@2.6.1)(magicast@0.5.2)(oxfmt@0.48.0)(oxlint@1.63.0(oxlint-tsgolint@0.22.1))(prettier@3.8.3)
+        specifier: ^0.0.3
+        version: 0.0.3(jiti@2.6.1)(magicast@0.5.2)(oxfmt@0.48.0)(oxlint@1.63.0(oxlint-tsgolint@0.22.1))(prettier@3.8.3)
       '@types/babel__generator':
         specifier: ^7.27.0
         version: 7.27.0
@@ -660,8 +660,8 @@ packages:
   '@pajecawav/prettier-config@1.0.2':
     resolution: {integrity: sha512-bduI6Yz4dSl7my0IYWM3EAucDTSvkLAbpWQNXACE9ElvZH2wkpCoMwu6bE8bzD/ZHgH3ZlCfbbNetNzi+bKm2A==}
 
-  '@pajecawav/tools@0.0.2':
-    resolution: {integrity: sha512-ZXTr8Mi2o0dd2ayZXCODo5lT9upgftShS2PTw8we2MY1waV09wuiii6J5Yw/TaSzkmHvfgBrwePZ3j5K9eyjIw==}
+  '@pajecawav/tools@0.0.3':
+    resolution: {integrity: sha512-rqz40Oixj+Z7o3SIGx4UIsFQ5nV7wDZ8hp51aOs0bO6zoGl7crrww0B/nI9sdNOqWUZdCtbbPqhsxZ8Vwvk5nQ==}
     hasBin: true
     peerDependencies:
       oxfmt: ^0.47.0
@@ -2510,7 +2510,7 @@ snapshots:
 
   '@pajecawav/prettier-config@1.0.2': {}
 
-  '@pajecawav/tools@0.0.2(jiti@2.6.1)(magicast@0.5.2)(oxfmt@0.48.0)(oxlint@1.63.0(oxlint-tsgolint@0.22.1))(prettier@3.8.3)':
+  '@pajecawav/tools@0.0.3(jiti@2.6.1)(magicast@0.5.2)(oxfmt@0.48.0)(oxlint@1.63.0(oxlint-tsgolint@0.22.1))(prettier@3.8.3)':
     dependencies:
       '@commitlint/config-conventional': 20.5.3
       '@commitlint/types': 20.5.0
@@ -3156,7 +3156,7 @@ snapshots:
       listr2: 9.0.5
       picomatch: 4.0.4
       string-argv: 0.3.2
-      tinyexec: 1.1.1
+      tinyexec: 1.1.2
       yaml: 2.8.3
 
   listr2@9.0.5:

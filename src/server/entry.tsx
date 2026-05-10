@@ -6,7 +6,7 @@ import { addRoute, createRouter, findRoute } from "rou3";
 import { withLeadingSlash, withoutTrailingSlash } from "ufo";
 import type { ResolvableHead } from "unhead/types";
 import { clientAssets } from "virtual:yamf:assets";
-import { pages, assets as serverAssets } from "virtual:yamf:pages";
+import { pages, assets as pagesServerAssets } from "virtual:yamf:pages";
 import type { PageHandler } from "#/page";
 
 interface Route {
@@ -40,14 +40,14 @@ for (const [relativePath, handler] of Object.entries(pages).toSorted((a, b) =>
 
 	addRoute(router, "GET", route, {
 		handler,
-		serverAssets: serverAssets[relativePath],
+		serverAssets: pagesServerAssets[relativePath],
 	});
 }
 
 export type ServerEntry = EventHandlerWithFetch<EventHandlerRequest, Promise<unknown>>;
 
 export interface DefineServerEntryOptions {
-	head?: ResolvableHead | ((event: H3Event<EventHandlerRequest>) => ResolvableHead);
+	head?: ResolvableHead | ((event: H3Event) => ResolvableHead);
 	Layout?: FC<PropsWithChildren>;
 	disableEarlyHints?: boolean;
 }

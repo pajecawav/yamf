@@ -19,8 +19,8 @@ import {
 } from "@babel/types";
 import type { Plugin } from "vite";
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
+// oxlint-disable-next-line typescript/no-unsafe-type-assertion
 const traverse = (_traverse.default as typeof _traverse) ?? _traverse;
 
 const ISLAND_REGEX = /\.island\.(j|t)sx?$/;

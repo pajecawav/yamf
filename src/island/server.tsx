@@ -4,7 +4,6 @@ import type { ImportAssetsResultRaw } from "#/shared/assets";
 import type { IslandClientDirective } from "./types";
 
 declare module "hono/jsx" {
-	// eslint-disable-next-line @typescript-eslint/no-namespace
 	namespace JSX {
 		interface IntrinsicElements {
 			"yamf-island": {
@@ -34,6 +33,7 @@ export const createIsland = (
 				island-props={stringify(props)}
 				island-src={assets.entry}
 				island-entry={exportName}
+				// oxlint-disable-next-line typescript/no-unsafe-type-assertion
 				island-client={props["yamf-client"] as IslandClientDirective}
 				// TODO: export CSS?
 				style={{ display: "contents" }}

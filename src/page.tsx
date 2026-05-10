@@ -2,7 +2,7 @@ import type { Child, FC, PropsWithChildren } from "hono/jsx";
 import { Fragment } from "hono/jsx";
 import { renderToReadableStream } from "hono/jsx/streaming";
 import { Hono } from "hono/tiny";
-import type { EventHandlerRequest, EventHandlerResponse, H3Event } from "nitro/h3";
+import type { EventHandlerResponse, H3Event } from "nitro/h3";
 import { HTTPResponse, withServerTiming } from "nitro/h3";
 import type { Unhead } from "unhead/server";
 import { transformHtmlTemplate } from "unhead/server";
@@ -14,7 +14,7 @@ import { SSRContext } from "./context/ssr";
 import type { ImportAssetsResult } from "./shared/assets";
 
 export type PageHandler = (
-	event: H3Event<EventHandlerRequest>,
+	event: H3Event,
 	params: {
 		serverAssets?: ImportAssetsResult;
 		head?: ResolvableHead;
@@ -23,7 +23,7 @@ export type PageHandler = (
 ) => EventHandlerResponse;
 
 export type PageRenderer = (
-	event: H3Event<EventHandlerRequest>,
+	event: H3Event,
 	params: { head: Unhead },
 ) => HTTPResponse | Promise<HTTPResponse> | Child | Promise<Child>;
 

@@ -1,5 +1,4 @@
 declare module "virtual:yamf:assets" {
-	// eslint-disable-next-line @typescript-eslint/consistent-type-imports
 	export const clientAssets: import("./shared/assets").ImportAssetsResult;
 }
 

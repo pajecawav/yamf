@@ -31,10 +31,10 @@ customElements.define(
 	"yamf-island",
 	class extends HTMLElement {
 		public connectedCallback() {
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 			const islandProps = parse(this.getAttribute("island-props") ?? "{}");
 			const islandSrc = this.getAttribute("island-src");
 			const islandEntry = this.getAttribute("island-entry");
+			// oxlint-disable-next-line typescript/no-unsafe-type-assertion
 			const islandClient = (this.getAttribute("island-client") ??
 				"load") as IslandClientDirective;
 
@@ -80,7 +80,7 @@ customElements.define(
 				case "skip":
 					break;
 				default:
-					// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+					// oxlint-disable-next-line typescript/restrict-template-expressions
 					throw new Error(`Invalid island-client value: ${islandClient}`);
 			}
 		}
