@@ -46,7 +46,7 @@
 		"prepublishOnly": "cross-env FORCE_COLOR=1 npm-run-all -l -s build -p lint:* test"
 	},
 	"peerDependencies": {
-		"hono": "^4.12.12",
+		"hono": "^4.12.18",
 		"vite": "^8.0.0"
 	},
 	"dependencies": {
