@@ -3,7 +3,7 @@ export type { PageHandler } from "./page";
 
 export { useSSRContext } from "./context/ssr";
 export { useEvent } from "./hooks/useEvent";
-export { useHead } from "./hooks/useHead";
+export { useHead, useSeoMeta } from "./hooks/useHead";
 
 export type { IslandClientDirective, IslandProps } from "./island/types";
 
