@@ -49,6 +49,7 @@ export type ServerEntry = EventHandlerWithFetch<EventHandlerRequest, Promise<unk
 export interface DefineServerEntryOptions {
 	head?: ResolvableHead | ((event: H3Event<EventHandlerRequest>) => ResolvableHead);
 	Layout?: FC<PropsWithChildren>;
+	disableEarlyHints?: boolean;
 }
 
 export const defineServerEntry = (options?: DefineServerEntryOptions): ServerEntry => {
@@ -64,12 +65,16 @@ export const defineServerEntry = (options?: DefineServerEntryOptions): ServerEnt
 
 		const assets = serverAssets ? serverAssets.merge(clientAssets) : clientAssets;
 
-		await writeEarlyHints(event, {
-			link: [
+		if (!options?.disableEarlyHints) {
+			const link = [
 				...assets.js.map(script => `<${script.href}>; rel=modulepreload`),
 				...assets.css.map(style => `<${style.href}>; rel=preload; as=style`),
-			],
-		});
+			];
+
+			if (link.length) {
+				await writeEarlyHints(event, { link });
+			}
+		}
 
 		return (await handler())(event, {
 			serverAssets,
