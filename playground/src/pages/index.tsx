@@ -1,5 +1,5 @@
-import { Suspense } from "hono/jsx";
 import { definePage } from "@pajecawav/yamf";
+import { Suspense } from "hono/jsx";
 import { AsyncCounter } from "~/components/AsyncCounter";
 import { Container } from "~/components/Container";
 import { Counter, Doubler, Tripler } from "~/components/Counter.island";

@@ -1,6 +1,6 @@
-import type { ImportAssetsResultRaw } from "#/shared/assets";
 import { stringify } from "devalue";
 import type { Child, FC } from "hono/jsx";
+import type { ImportAssetsResultRaw } from "#/shared/assets";
 import type { IslandClientDirective } from "./types";
 
 declare module "hono/jsx" {

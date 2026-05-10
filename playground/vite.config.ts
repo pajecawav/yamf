@@ -1,5 +1,5 @@
-import { defineConfig } from "vite";
 import yamf from "@pajecawav/yamf/vite";
+import { defineConfig } from "vite";
 
 export default defineConfig({
 	optimizeDeps: {

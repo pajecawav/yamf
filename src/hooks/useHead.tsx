@@ -1,8 +1,8 @@
-import { useSSRContext } from "#/context/ssr";
 import { useHead as _useHead } from "unhead";
 import type { ClientUnhead } from "unhead/client";
 import { createHead } from "unhead/client";
 import type { ResolvableHead } from "unhead/types";
+import { useSSRContext } from "#/context/ssr";
 
 declare global {
 	interface Window {

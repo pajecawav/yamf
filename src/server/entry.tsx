@@ -1,13 +1,13 @@
-import type { PageHandler } from "#/page";
+import path from "node:path";
 import type { FC, PropsWithChildren } from "hono/jsx";
 import type { EventHandlerRequest, EventHandlerWithFetch, H3Event } from "nitro/h3";
 import { defineHandler, HTTPError, writeEarlyHints } from "nitro/h3";
-import path from "node:path";
 import { addRoute, createRouter, findRoute } from "rou3";
 import { withLeadingSlash, withoutTrailingSlash } from "ufo";
 import type { ResolvableHead } from "unhead/types";
 import { clientAssets } from "virtual:yamf:assets";
 import { pages, assets as serverAssets } from "virtual:yamf:pages";
+import type { PageHandler } from "#/page";
 
 interface Route {
 	handler: () => Promise<PageHandler>;

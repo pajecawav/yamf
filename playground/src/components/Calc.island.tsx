@@ -1,5 +1,5 @@
-import { useState } from "hono/jsx";
 import { useHead } from "@pajecawav/yamf";
+import { useState } from "hono/jsx";
 
 export default function Calc() {
 	const [a, setA] = useState(2);

@@ -1,6 +1,6 @@
+import { existsSync } from "node:fs";
 import type { NitroPluginConfig } from "nitro/vite";
 import { nitro } from "nitro/vite";
-import { existsSync } from "node:fs";
 import type { EnvironmentOptions, PluginOption } from "vite";
 import { islands } from "./islands";
 import { virtualAssets } from "./virtual-assets";

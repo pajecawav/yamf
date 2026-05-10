@@ -1,5 +1,5 @@
-import { useHead } from "#/hooks/useHead";
 import type { ResolvableHead } from "unhead/types";
+import { useHead } from "#/hooks/useHead";
 
 export type HeadProps = ResolvableHead;
 
