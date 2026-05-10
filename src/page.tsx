@@ -4,27 +4,32 @@ import { renderToReadableStream } from "hono/jsx/streaming";
 import { Hono } from "hono/tiny";
 import type { EventHandlerResponse, H3Event } from "nitro/h3";
 import { HTTPResponse, withServerTiming } from "nitro/h3";
+import { useSeoMeta } from "unhead";
 import type { Unhead } from "unhead/server";
 import { transformHtmlTemplate } from "unhead/server";
 import { createStreamableHead, wrapStream } from "unhead/stream/server";
-import type { ResolvableHead, ResolvableLink } from "unhead/types";
+import type { ResolvableLink, UseSeoMetaInput } from "unhead/types";
 import { clientAssets } from "virtual:yamf:assets";
 import { template } from "virtual:yamf:template";
 import { SSRContext } from "./context/ssr";
 import type { ImportAssetsResult } from "./shared/assets";
+import { YamfHead } from "./shared/head";
 
 export type PageHandler = (
 	event: H3Event,
 	params: {
 		serverAssets?: ImportAssetsResult;
-		head?: ResolvableHead;
+		head?: YamfHead;
 		Layout?: FC<PropsWithChildren>;
 	},
 ) => EventHandlerResponse;
 
 export type PageRenderer = (
 	event: H3Event,
-	params: { head: Unhead },
+	params: {
+		head: Unhead;
+		seoHead: (input: UseSeoMetaInput) => void;
+	},
 ) => HTTPResponse | Promise<HTTPResponse> | Child | Promise<Child>;
 
 interface DefinePageOptions {
@@ -38,6 +43,8 @@ export const definePage = (options: DefinePageOptions): PageHandler => {
 		const assets = serverAssets ? clientAssets.merge(serverAssets) : clientAssets;
 
 		const { head } = createStreamableHead({ init: [headInit] });
+		const seoHead = (input?: UseSeoMetaInput) => useSeoMeta(head, input);
+		seoHead(headInit?.seo);
 
 		head.push({
 			link: [
@@ -47,7 +54,7 @@ export const definePage = (options: DefinePageOptions): PageHandler => {
 			script: [{ type: "module", src: assets.entry }],
 		});
 
-		const content = await options.render(event, { head });
+		const content = await options.render(event, { head, seoHead });
 
 		if (content instanceof HTTPResponse) {
 			return content;

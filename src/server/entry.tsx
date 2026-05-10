@@ -4,10 +4,10 @@ import type { EventHandlerRequest, EventHandlerWithFetch, H3Event } from "nitro/
 import { defineHandler, HTTPError, writeEarlyHints } from "nitro/h3";
 import { addRoute, createRouter, findRoute } from "rou3";
 import { withLeadingSlash, withoutTrailingSlash } from "ufo";
-import type { ResolvableHead } from "unhead/types";
 import { clientAssets } from "virtual:yamf:assets";
 import { pages, assets as pagesServerAssets } from "virtual:yamf:pages";
 import type { PageHandler } from "#/page";
+import { YamfHead } from "#/shared/head";
 
 interface Route {
 	handler: () => Promise<PageHandler>;
@@ -47,7 +47,7 @@ for (const [relativePath, handler] of Object.entries(pages).toSorted((a, b) =>
 export type ServerEntry = EventHandlerWithFetch<EventHandlerRequest, Promise<unknown>>;
 
 export interface DefineServerEntryOptions {
-	head?: ResolvableHead | ((event: H3Event) => ResolvableHead);
+	head?: YamfHead | ((event: H3Event) => YamfHead);
 	Layout?: FC<PropsWithChildren>;
 	disableEarlyHints?: boolean;
 }
