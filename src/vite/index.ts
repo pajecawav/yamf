@@ -29,6 +29,10 @@ const yamf = (options?: YamfOptions): PluginOption[] => {
 			};
 
 			return {
+				ssr: {
+					// we need to inline because otherwise fullstack plugin fails to build manifest for assets imports
+					noExternal: ["@pajecawav/yamf"],
+				},
 				optimizeDeps: {
 					include: [
 						"hono",
