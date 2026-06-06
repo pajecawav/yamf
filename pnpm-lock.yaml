@@ -46,7 +46,7 @@ importers:
         specifier: ^7.28.0
         version: 7.28.0
       '@types/node':
-        specifier: ^24.12.4
+        specifier: ^24.13.0
         version: 24.13.0
       '@typescript/native-preview':
         specifier: 7.0.0-dev.20260602.1
@@ -97,7 +97,7 @@ importers:
         specifier: workspace:*
         version: link:..
       '@types/node':
-        specifier: ^24.12.4
+        specifier: ^24.13.0
         version: 24.13.0
       hono:
         specifier: ^4.12.23
