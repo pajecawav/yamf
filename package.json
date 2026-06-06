@@ -46,39 +46,39 @@
 		"prepublishOnly": "cross-env FORCE_COLOR=1 npm-run-all -l -s build -p lint:* test"
 	},
 	"peerDependencies": {
-		"hono": "^4.12.12",
-		"vite": "^8.0.0"
+		"hono": "^4.12.23",
+		"vite": "^8.0.16"
 	},
 	"dependencies": {
-		"@babel/generator": "^7.29.1",
-		"@babel/parser": "^7.29.3",
-		"@babel/traverse": "^7.29.0",
-		"@babel/types": "^7.29.0",
-		"devalue": "^5.8.0",
+		"@babel/generator": "^7.29.7",
+		"@babel/parser": "^7.29.7",
+		"@babel/traverse": "^7.29.7",
+		"@babel/types": "^7.29.7",
+		"devalue": "^5.8.1",
 		"nitro": "3.0.260429-beta",
 		"rou3": "^0.8.1",
 		"ufo": "^1.6.4",
-		"unhead": "^3.1.0"
+		"unhead": "^3.1.1"
 	},
 	"devDependencies": {
-		"@pajecawav/tools": "^0.0.3",
+		"@pajecawav/tools": "^0.0.4",
 		"@types/babel__generator": "^7.27.0",
 		"@types/babel__traverse": "^7.28.0",
-		"@types/node": "^24.12.3",
-		"@typescript/native-preview": "7.0.0-dev.20260510.1",
-		"@vitest/coverage-v8": "^4.1.5",
-		"@vitest/ui": "^4.1.5",
+		"@types/node": "^24.12.4",
+		"@typescript/native-preview": "7.0.0-dev.20260602.1",
+		"@vitest/coverage-v8": "^4.1.8",
+		"@vitest/ui": "^4.1.8",
 		"cross-env": "^10.1.0",
-		"hono": "^4.12.18",
+		"hono": "^4.12.23",
 		"husky": "^9.1.7",
 		"npm-run-all2": "^8.0.4",
-		"oxfmt": "^0.48.0",
-		"oxlint": "^1.63.0",
-		"oxlint-tsgolint": "^0.22.1",
-		"publint": "^0.3.20",
-		"tsdown": "0.22.0",
-		"vite": "^8.0.11",
-		"vitest": "^4.1.5"
+		"oxfmt": "^0.53.0",
+		"oxlint": "^1.68.0",
+		"oxlint-tsgolint": "^0.23.0",
+		"publint": "^0.3.21",
+		"tsdown": "0.22.1",
+		"vite": "^8.0.16",
+		"vitest": "^4.1.8"
 	},
-	"packageManager": "pnpm@10.33.2+sha512.a90faf6feeab71ad6c6e57f94e0fe1a12f5dcc22cd754db40ae9593eb6a3e0b6b12e3540218bb37ae083404b1f2ce6db2a4121e979829b4aff94b99f49da1cf8"
+	"packageManager": "pnpm@10.34.1+sha512.b58fbde6dca66a929538021581f648b4570b6ca19b18e7cbd7f2c07a7b24454155388dacdf08f2af3678e88a6d1fe04f9d609df24bf51735a060ea041b374ab7"
 }

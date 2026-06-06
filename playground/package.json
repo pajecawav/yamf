@@ -10,10 +10,10 @@
 	},
 	"devDependencies": {
 		"@pajecawav/yamf": "workspace:*",
-		"@types/node": "^24.12.3",
-		"hono": "^4.12.18",
-		"tinyglobby": "^0.2.16",
+		"@types/node": "^24.12.4",
+		"hono": "^4.12.23",
+		"tinyglobby": "^0.2.17",
 		"typescript": "~6.0.3",
-		"vite": "^8.0.11"
+		"vite": "^8.0.16"
 	}
 }
