@@ -1,5 +1,4 @@
-import type { Child, FC, PropsWithChildren } from "hono/jsx";
-import { Fragment } from "hono/jsx";
+import { Fragment, type Child } from "hono/jsx";
 import { renderToReadableStream } from "hono/jsx/streaming";
 import { Hono } from "hono/tiny";
 import type { EventHandlerResponse, H3Event } from "nitro/h3";
@@ -9,7 +8,7 @@ import type { Unhead } from "unhead/server";
 import { transformHtmlTemplate } from "unhead/server";
 import { createStreamableHead, wrapStream } from "unhead/stream/server";
 import type { ResolvableLink, UseSeoMetaInput } from "unhead/types";
-import { clientAssets } from "virtual:yamf:assets";
+import { Root as RootComponent } from "virtual:yamf:root";
 import { template } from "virtual:yamf:template";
 import { SSRContext } from "./context/ssr";
 import type { ImportAssetsResult } from "./shared/assets";
@@ -18,9 +17,8 @@ import { YamfHead } from "./shared/head";
 export type PageHandler = (
 	event: H3Event,
 	params: {
-		serverAssets?: ImportAssetsResult;
+		assets: ImportAssetsResult;
 		head?: YamfHead;
-		Layout?: FC<PropsWithChildren>;
 	},
 ) => EventHandlerResponse;
 
@@ -35,13 +33,10 @@ export type PageRenderer = (
 interface DefinePageOptions {
 	render: PageRenderer;
 	stream?: boolean;
-	Layout?: FC<PropsWithChildren>;
 }
 
 export const definePage = (options: DefinePageOptions): PageHandler => {
-	return async (event, { serverAssets, head: headInit, Layout = options.Layout ?? Fragment }) => {
-		const assets = serverAssets ? clientAssets.merge(serverAssets) : clientAssets;
-
+	return async (event, { assets, head: headInit }) => {
 		const { head } = createStreamableHead({ init: [headInit] });
 		const seoHead = (input?: UseSeoMetaInput) => useSeoMeta(head, input);
 		seoHead(headInit?.seo);
@@ -60,9 +55,11 @@ export const definePage = (options: DefinePageOptions): PageHandler => {
 			return content;
 		}
 
+		const Root = RootComponent ?? Fragment;
+
 		const App = async () => (
 			<SSRContext value={{ head, event }}>
-				<Layout>{content}</Layout>
+				<Root>{content}</Root>
 			</SSRContext>
 		);
 

@@ -1,11 +1,11 @@
 import path from "node:path";
-import type { FC, PropsWithChildren } from "hono/jsx";
 import type { EventHandlerRequest, EventHandlerWithFetch, H3Event } from "nitro/h3";
 import { defineHandler, HTTPError, writeEarlyHints } from "nitro/h3";
 import { addRoute, createRouter, findRoute } from "rou3";
 import { withLeadingSlash, withoutTrailingSlash } from "ufo";
 import { clientAssets } from "virtual:yamf:assets";
 import { pages, assets as pagesServerAssets } from "virtual:yamf:pages";
+import { rootAssets } from "virtual:yamf:root";
 import type { PageHandler } from "#/page";
 import { YamfHead } from "#/shared/head";
 
@@ -48,7 +48,6 @@ export type ServerEntry = EventHandlerWithFetch<EventHandlerRequest, Promise<unk
 
 export interface DefineServerEntryOptions {
 	head?: YamfHead | ((event: H3Event) => YamfHead);
-	Layout?: FC<PropsWithChildren>;
 	disableEarlyHints?: boolean;
 }
 
@@ -63,7 +62,7 @@ export const defineServerEntry = (options?: DefineServerEntryOptions): ServerEnt
 		const { handler, serverAssets } = route.data;
 		event.context.params = route.params;
 
-		const assets = serverAssets ? serverAssets.merge(clientAssets) : clientAssets;
+		const assets = clientAssets.merge(...[rootAssets, serverAssets].filter(x => !!x));
 
 		if (!options?.disableEarlyHints) {
 			const link = [
@@ -77,9 +76,8 @@ export const defineServerEntry = (options?: DefineServerEntryOptions): ServerEnt
 		}
 
 		return (await handler())(event, {
-			serverAssets,
+			assets,
 			head: typeof options?.head === "function" ? options.head(event) : options?.head,
-			Layout: options?.Layout,
 		});
 	});
 };

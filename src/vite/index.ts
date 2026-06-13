@@ -5,6 +5,7 @@ import type { EnvironmentOptions, PluginOption } from "vite";
 import { islands } from "./islands";
 import { virtualAssets } from "./virtual-assets";
 import { virtualPages } from "./virtual-pages";
+import { virtualRoot } from "./virtual-root";
 import { virtualTemplate } from "./virtual-template";
 
 export interface YamfOptions {
@@ -61,6 +62,7 @@ const yamf = (options?: YamfOptions): PluginOption[] => {
 	plugins.push(virtualAssets());
 	plugins.push(virtualPages());
 	plugins.push(virtualTemplate());
+	plugins.push(virtualRoot());
 
 	plugins.push(
 		nitro({

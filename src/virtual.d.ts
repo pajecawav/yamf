@@ -11,3 +11,10 @@ declare module "virtual:yamf:pages" {
 declare module "virtual:yamf:template" {
 	export const template: string;
 }
+
+declare module "virtual:yamf:root" {
+	const Root: import("hono/jsx").FC | null;
+	const rootAssets: import("./shared/assets").ImportAssetsResult | null;
+
+	export { Root, rootAssets };
+}
