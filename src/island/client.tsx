@@ -62,6 +62,7 @@ customElements.define(
 			};
 
 			switch (islandClient) {
+				case true:
 				case "load":
 					initIsland();
 					break;
@@ -77,9 +78,11 @@ customElements.define(
 						initIsland();
 					}
 					break;
+				case false:
 				case "skip":
 					break;
 				default:
+					islandClient satisfies never;
 					// oxlint-disable-next-line typescript/restrict-template-expressions
 					throw new Error(`Invalid island-client value: ${islandClient}`);
 			}
