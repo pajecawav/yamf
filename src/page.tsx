@@ -28,7 +28,7 @@ export type PageRenderer = (
 		head: Unhead;
 		seoHead: (input: UseSeoMetaInput) => void;
 	},
-) => HTTPResponse | Promise<HTTPResponse> | Child | Promise<Child>;
+) => HTTPResponse | Child | Promise<Child | HTTPResponse>;
 
 interface DefinePageOptions {
 	render: PageRenderer;
