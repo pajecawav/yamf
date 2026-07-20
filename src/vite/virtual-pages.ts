@@ -20,11 +20,12 @@ export const virtualPages = (): Plugin => {
 			}
 
 			return js`
-const pages = import.meta.glob("/src/pages/**/*.{js,mjs,cjs,ts,mts,cts,tsx,jsx}", {
+const pages = import.meta.glob("/src/pages/**/*.page.{js,mjs,cjs,ts,mts,cts,tsx,jsx}", {
 	import: "default",
 });
+
 const assets = import.meta.glob(
-	"/src/pages/**/*.{js,mjs,cjs,ts,mts,cts,tsx,jsx}",
+	"/src/pages/**/*.page.{js,mjs,cjs,ts,mts,cts,tsx,jsx}",
 	{
 		import: "default",
 		query: "?assets=ssr",
