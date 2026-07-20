@@ -1,5 +1,5 @@
 import { definePage } from "@pajecawav/yamf";
-import { HTTPResponse, redirect } from "nitro/h3";
+import { HTTPResponse } from "nitro/h3";
 
 export default definePage({
 	render: async () => {
