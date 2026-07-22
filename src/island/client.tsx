@@ -2,7 +2,7 @@ import { parse } from "devalue";
 import type { FC } from "hono/jsx";
 import { hydrateRoot } from "hono/jsx/dom/client";
 import { withLeadingSlash } from "ufo";
-import type { IslandClientDirective } from "./types";
+import type { IslandClientDirectiveSerialized } from "./types";
 
 declare let __island_raw_import__: <T>(file: string) => Promise<T>;
 
@@ -36,7 +36,7 @@ customElements.define(
 			const islandEntry = this.getAttribute("island-entry");
 			// oxlint-disable-next-line typescript/no-unsafe-type-assertion
 			const islandClient = (this.getAttribute("island-client") ??
-				"load") as IslandClientDirective;
+				"load") as IslandClientDirectiveSerialized;
 
 			if (!islandSrc) {
 				throw new Error("Missing island-src attribute");
@@ -62,7 +62,7 @@ customElements.define(
 			};
 
 			switch (islandClient) {
-				case true:
+				case "true":
 				case "load":
 					initIsland();
 					break;
@@ -78,7 +78,7 @@ customElements.define(
 						initIsland();
 					}
 					break;
-				case false:
+				case "false":
 				case "skip":
 					break;
 				default:
