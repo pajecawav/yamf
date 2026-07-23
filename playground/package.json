@@ -15,5 +15,8 @@
 		"tinyglobby": "^0.2.17",
 		"typescript": "~7.0.2",
 		"vite": "^8.1.5"
+	},
+	"dependencies": {
+		"@tanstack/react-query": "^5.101.4"
 	}
 }

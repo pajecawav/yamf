@@ -43,6 +43,12 @@ const yamf = (options?: YamfOptions): PluginOption[] => {
 						"ufo",
 					],
 				},
+				resolve: {
+					alias: {
+						react: "@hono/react-compat",
+						"react-dom": "@hono/react-compat",
+					},
+				},
 				environments: {
 					...(existsSync("./src/server.tsx") ? { ssr: ssrEnv } : {}),
 					client: {
