@@ -20,6 +20,9 @@ importers:
       '@babel/types':
         specifier: ^7.29.7
         version: 7.29.7
+      '@hono/react-compat':
+        specifier: ^0.0.3
+        version: 0.0.3(hono@4.12.31)
       devalue:
         specifier: ^5.8.1
         version: 5.8.1
@@ -42,9 +45,6 @@ importers:
         specifier: ^3.10.0
         version: 3.10.0(react@19.2.8)
     devDependencies:
-      '@hono/react-compat':
-        specifier: ^0.0.3
-        version: 0.0.3(hono@4.12.31)
       '@pajecawav/tools':
         specifier: ^0.0.7
         version: 0.0.7(magicast@0.5.2)(oxfmt@0.59.0)(oxlint@1.74.0(oxlint-tsgolint@0.25.0))

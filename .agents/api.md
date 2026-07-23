@@ -24,6 +24,14 @@ Types: `PageHandler`, `IslandClientDirective`, `IslandProps`, `YamfHead`, `Impor
 
 Side-effect import. Registers `yamf-island` custom element and `window.__UNHEAD__`. No exports.
 
+## Routing (wouter)
+
+Every page renders inside a wouter `<Router ssrPath={pathname} ssrSearch={search}>`, so wouter hooks (`useSearchParams`, `useLocation`, `useRoute`) and components (`Link`, `Route`) are available inside islands and the root layout. Client-side after hydration.
+
+## React ecosystem compatibility
+
+`react` / `react-dom` / `use-sync-external-store` are aliased to `@hono/react-compat` by the Vite plugin (peer dependency). React-ecosystem libraries work on top of `hono/jsx` without shipping React.
+
 ## Nitro utilities
 
 Imported from `nitro` / `nitro/h3` / `nitro/cache` etc. — these are Nitro's, not yamf's. See Nitro docs. Common ones: `defineHandler`, `HTTPError`, `HTTPResponse`, `getQuery`, `getRouterParams`, `setHeader`, `withServerTiming`, `writeEarlyHints`, `defineCachedFunction`, `useStorage`, `useRuntimeConfig`.

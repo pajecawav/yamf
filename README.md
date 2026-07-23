@@ -1,6 +1,6 @@
 # yamf
 
-SSR meta-framework on top of [Vite](https://vite.dev), [Nitro](https://nitro.build/), and [Hono JSX](https://hono.dev/docs/guides/jsx). File-based routing for HTML pages, islands architecture for client interactivity, head/SEO via [unhead](https://unhead.unjs.io/), and full Nitro feature set (presets, caching, middleware, API routes).
+SSR meta-framework on top of [Vite](https://vite.dev), [Nitro](https://nitro.build/), and [Hono JSX](https://hono.dev/docs/guides/jsx). File-based routing for HTML pages, islands architecture for client interactivity, client-side routing via [wouter](https://github.com/molefrog/wouter), React-ecosystem compatibility through [@hono/react-compat](https://github.com/honojs/react-compat), head/SEO via [unhead](https://unhead.unjs.io/), and full Nitro feature set (presets, caching, middleware, API routes).
 
 ## Install
 
@@ -148,6 +148,37 @@ export default definePage({
 | `skip`           | Server-rendered only, no hydration. |
 
 Props are serialized with `devalue` (supports `Date`, `Map`, `Set`, `URL`, `RegExp`, `Error`, `BigInt`, cycles).
+
+### React ecosystem compatibility
+
+The Vite plugin aliases `react` and `react-dom` to [`@hono/react-compat`](https://github.com/honojs/react-compat), which reimplements the React API on top of `hono/jsx`. This means libraries from the React ecosystem (wouter, tanstack/react-query, etc.) work inside islands and the render tree without shipping React. `use-sync-external-store` is also aliased to `@hono/react-compat`.
+
+## Routing
+
+Every page renders inside a [wouter](https://github.com/molefrog/wouter) `<Router>`, seeded with the current request's `pathname` and `search` for SSR. After hydration, navigation is client-side — wouter hooks and components work inside islands and the root layout:
+
+```tsx
+// src/components/Search.island.tsx
+import { useSearchParams } from "wouter";
+
+export const Search = () => {
+    const [params, setParams] = useSearchParams();
+
+    return (
+        <input
+            value={params.get("q") ?? ""}
+            onChange={e =>
+                setParams(prev => {
+                    prev.set("q", e.target.value);
+                    return prev;
+                })
+            }
+        />
+    );
+};
+```
+
+wouter's `Link`, `Route`, `useLocation`, `useRoute`, and `useSearchParams` are all available. Note that yamf's file-based routing (see [File routing](#file-routing)) handles full-page SSR routes, while wouter handles client-side navigation and query-param state within a page.
 
 ## Client entry
 
