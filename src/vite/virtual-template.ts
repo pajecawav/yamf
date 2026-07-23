@@ -53,8 +53,7 @@ export const virtualTemplate = (): Plugin => {
 					server.moduleGraph.invalidateModule(mod);
 				}
 
-				// TODO: should reload?
-				// server.ws.send({ type: "full-reload" });
+				server.ws.send({ type: "full-reload" });
 			}
 		},
 	};
