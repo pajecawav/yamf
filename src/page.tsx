@@ -10,6 +10,7 @@ import { createStreamableHead, wrapStream } from "unhead/stream/server";
 import type { ResolvableLink, UseSeoMetaInput } from "unhead/types";
 import { Root as RootComponent } from "virtual:yamf:root";
 import { template } from "virtual:yamf:template";
+import { Router } from "wouter";
 import { SSRContext } from "./context/ssr";
 import type { ImportAssetsResult } from "./shared/assets";
 import { YamfHead } from "./shared/head";
@@ -59,7 +60,9 @@ export const definePage = (options: DefinePageOptions): PageHandler => {
 
 		const App = async () => (
 			<SSRContext value={{ head, event }}>
-				<Root>{content}</Root>
+				<Router ssrPath={event.url.pathname} ssrSearch={event.url.search}>
+					<Root>{content}</Root>
+				</Router>
 			</SSRContext>
 		);
 

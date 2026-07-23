@@ -32,7 +32,10 @@ const yamf = (options?: YamfOptions): PluginOption[] => {
 			return {
 				ssr: {
 					// we need to inline because otherwise fullstack plugin fails to build manifest for assets imports
-					noExternal: ["@pajecawav/yamf"],
+					// also, we need to bundle everything so that the `react` -> `@hono/react-compat` alias
+					// is applied to all dependencies (e.g. wouter) in dev mode. Externalized deps are
+					// loaded natively by Node, bypassing Vite's resolve.alias.
+					noExternal: true,
 				},
 				optimizeDeps: {
 					include: [
@@ -44,10 +47,17 @@ const yamf = (options?: YamfOptions): PluginOption[] => {
 					],
 				},
 				resolve: {
-					alias: {
-						react: "@hono/react-compat",
-						"react-dom": "@hono/react-compat",
-					},
+					alias: [
+						{ find: "react", replacement: "@hono/react-compat" },
+						{ find: "react-dom", replacement: "@hono/react-compat" },
+						// use-sync-external-store is a CJS package that requires("react").
+						// Vite's SSR module runner can't process CJS, so we alias it to
+						// @hono/react-compat which exports useSyncExternalStore from hono/jsx.
+						{
+							find: /^use-sync-external-store(?:\/shim(?:\/.*)?)?$/,
+							replacement: "@hono/react-compat",
+						},
+					],
 				},
 				environments: {
 					...(existsSync("./src/server.tsx") ? { ssr: ssrEnv } : {}),
