@@ -30,7 +30,8 @@
 		"prettier.config.mjs",
 		"commitlint.config.js",
 		"eslint.config.mjs",
-		"tsdown.config.ts"
+		"tsdown.config.ts",
+		"playwright.config.ts"
 	],
 	"exclude": ["node_modules"]
 }
