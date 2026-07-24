@@ -22,7 +22,7 @@ test.describe("SSR streaming", () => {
 	});
 
 	test("non-streaming page sends complete response", async ({ request }) => {
-		const response = await request.get("/e2e/calc");
+		const response = await request.get("/e2e/islands");
 		const text = await response.text();
 		expect(text).toContain("<!doctype html>");
 		expect(text).toContain("</html>");

@@ -7,7 +7,7 @@ export default definePage({
 
 		return new HTTPResponse(null, {
 			status: 302,
-			headers: { location: "/e2e/calc" },
+			headers: { location: "/e2e" },
 		});
 	},
 });

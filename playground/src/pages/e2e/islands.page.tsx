@@ -1,6 +1,6 @@
 import { definePage } from "@pajecawav/yamf";
 import { Container } from "./components/Container";
-import { Counter } from "./components/Counter.island";
+import DefaultCounter, { Counter } from "./components/Counter.island";
 
 export default definePage({
 	render: () => {
@@ -21,6 +21,8 @@ export default definePage({
 				<div data-testid="skip">
 					<Counter initialValue={5} yamf-client="skip" />
 				</div>
+
+				<DefaultCounter initialValue={6} />
 			</Container>
 		);
 	},

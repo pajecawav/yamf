@@ -7,10 +7,6 @@ export default defineConfig({
 	testDir: ".",
 	testMatch: "**/*.spec.ts",
 	fullyParallel: true,
-	timeout: 30_000,
-	expect: {
-		timeout: 10_000,
-	},
 	reporter: [
 		[process.env.CI ? "github" : "list"],
 		["html", { outputFolder: "playwright-report" }],

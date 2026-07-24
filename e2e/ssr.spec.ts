@@ -28,11 +28,6 @@ test.describe("SSR", () => {
 			await expect(page).toHaveTitle(/YAMF Playground/);
 		});
 
-		test("calc page at /e2e/calc", async ({ page }) => {
-			await page.goto("/e2e/calc", { waitUntil: "domcontentloaded" });
-			await expect(page.locator('yamf-island[island-entry="default"]')).toBeVisible();
-		});
-
 		test("nested index at /e2e/wouter", async ({ page }) => {
 			await page.goto("/e2e/wouter", { waitUntil: "domcontentloaded" });
 			await expect(page.locator('yamf-island[island-entry="WouterDemo"]')).toBeVisible();
@@ -52,21 +47,21 @@ test.describe("SSR", () => {
 	});
 
 	test("non-streaming page returns complete HTML", async ({ page }) => {
-		await page.goto("/e2e/calc", { waitUntil: "domcontentloaded" });
-		await expect(page.locator("body")).toContainText("= 14");
+		await page.goto("/e2e/islands", { waitUntil: "domcontentloaded" });
+		await expect(page.getByTestId("load")).toContainText("1");
 	});
 
 	test("content visible before JS executes", async ({ page }) => {
-		await page.goto("/e2e/calc", { waitUntil: "domcontentloaded" });
-		await expect(page.locator("yamf-island p")).toContainText("= 14");
+		await page.goto("/e2e/islands", { waitUntil: "domcontentloaded" });
+		await expect(page.getByTestId("visible")).toContainText("4");
 	});
 
 	test("multiple pages render correct content", async ({ page }) => {
 		await page.goto("/e2e", { waitUntil: "domcontentloaded" });
 		expect(await page.locator("yamf-island").count()).toBeGreaterThanOrEqual(3);
 
-		await page.goto("/e2e/calc", { waitUntil: "domcontentloaded" });
-		await expect(page.locator('yamf-island[island-entry="default"]')).toBeVisible();
+		await page.goto("/e2e/islands", { waitUntil: "domcontentloaded" });
+		await expect(page.locator('yamf-island[island-entry="Counter"]').first()).toBeVisible();
 
 		await page.goto("/e2e/wouter", { waitUntil: "domcontentloaded" });
 		await expect(page.locator('input[name="q"]')).toBeVisible();

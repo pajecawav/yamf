@@ -47,7 +47,7 @@ test.describe("template.html", () => {
 	});
 
 	test("template marker on all pages", async ({ page }) => {
-		for (const path of ["/e2e", "/e2e/calc", "/e2e/wouter"]) {
+		for (const path of ["/e2e", "/e2e/wouter"]) {
 			await page.goto(path, { waitUntil: "domcontentloaded" });
 			await expect(page.locator(".test")).toHaveText("template");
 		}

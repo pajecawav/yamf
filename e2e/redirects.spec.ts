@@ -8,22 +8,21 @@ test.describe("redirects", () => {
 		expect(response.status()).toBe(302);
 	});
 
-	test("has Location header pointing to /e2e/calc", async ({ request }) => {
+	test("has Location header pointing to /e2e", async ({ request }) => {
 		const response = await request.get("/e2e/redirect", {
 			maxRedirects: 0,
 		});
-		expect(response.headers().location).toBe("/e2e/calc");
+		expect(response.headers().location).toBe("/e2e");
 	});
 
-	test("browser follows redirect to /e2e/calc", async ({ page }) => {
+	test("browser follows redirect to /e2e", async ({ page }) => {
 		await page.goto("/e2e/redirect");
-		await page.waitForURL(/\/e2e\/calc$/);
-		expect(page.url()).toMatch(/\/e2e\/calc$/);
+		await page.waitForURL(/\/e2e$/);
+		expect(page.url()).toMatch(/\/e2e$/);
 	});
 
-	test("renders calc page content after redirect", async ({ page }) => {
+	test("renders index page content after redirect", async ({ page }) => {
 		await page.goto("/e2e/redirect");
-		await page.waitForURL(/\/e2e\/calc$/);
-		await expect(page.locator("body")).toContainText("= 14");
+		await expect(page.locator("body")).toContainText("URL: http://localhost:4321/e2e");
 	});
 });

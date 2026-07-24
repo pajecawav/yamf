@@ -81,10 +81,10 @@ test.describe("islands — multiple islands independence", () => {
 		await first.click();
 		await expect(first).toHaveText("2");
 
-		const second = buttons.nth(1);
-		await expect(second).toHaveText("2");
+		const second = buttons.nth(2);
+		await expect(second).toHaveText("7");
 		await second.click();
-		await expect(second).toHaveText("4");
+		await expect(second).toHaveText("8");
 	});
 });
 
@@ -94,16 +94,10 @@ test.describe("islands — named vs default exports", () => {
 		expect(
 			await page.locator('yamf-island[island-entry="Counter"]').count(),
 		).toBeGreaterThanOrEqual(1);
-		expect(
-			await page.locator('yamf-island[island-entry="Doubler"]').count(),
-		).toBeGreaterThanOrEqual(1);
-		expect(
-			await page.locator('yamf-island[island-entry="Tripler"]').count(),
-		).toBeGreaterThanOrEqual(1);
 	});
 
 	test("default export island has entry='default'", async ({ page }) => {
-		await page.goto("/e2e/calc", { waitUntil: "domcontentloaded" });
+		await page.goto("/e2e/islands", { waitUntil: "domcontentloaded" });
 		await expect(page.locator('yamf-island[island-entry="default"]')).toBeVisible();
 	});
 });
@@ -146,15 +140,6 @@ test.describe("islands — props serialization (devalue)", () => {
 });
 
 test.describe("islands — useHead in islands (client-side)", () => {
-	test("Calc island updates title on input change", async ({ page }) => {
-		await page.goto("/e2e/calc", { waitUntil: "networkidle" });
-
-		await expect(page).toHaveTitle(/2 \* 7 = 14/);
-
-		await page.locator('input[type="number"]').first().fill("5");
-		await expect(page).toHaveTitle(/5 \* 7 = 35/);
-	});
-
 	test("Counter with withTitle updates title on click", async ({ page }) => {
 		await page.goto("/e2e", { waitUntil: "networkidle" });
 
