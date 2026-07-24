@@ -1,6 +1,6 @@
 import { definePage } from "@pajecawav/yamf";
-import { Container } from "./components/Container";
-import DefaultCounter, { Counter } from "./components/Counter.island";
+import { Container } from "~/components/Container";
+import DefaultCounter, { Counter } from "~/components/Counter.island";
 
 export default definePage({
 	stream: true,

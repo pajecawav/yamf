@@ -1,5 +1,5 @@
 import { definePage } from "@pajecawav/yamf";
-import { PropsDemo } from "./components/PropsDemo.island";
+import { PropsDemo } from "../components/PropsDemo.island";
 
 export default definePage({
 	render: () => {

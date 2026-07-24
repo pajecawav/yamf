@@ -5,7 +5,7 @@ const getButton = (page: import("@playwright/test").Page, testid: string) =>
 
 test.describe("islands — hydration directives", () => {
 	test.beforeEach(async ({ page }) => {
-		await page.goto("/e2e/islands", { waitUntil: "networkidle" });
+		await page.goto("/islands", { waitUntil: "networkidle" });
 	});
 
 	test("load (default) hydrates and is interactive", async ({ page }) => {
@@ -27,7 +27,6 @@ test.describe("islands — hydration directives", () => {
 	test("idle eventually hydrates and becomes interactive", async ({ page }) => {
 		const btn = getButton(page, "idle");
 		await expect(btn).toHaveText("3");
-		await page.waitForTimeout(1000);
 		await btn.click();
 		await expect(btn).toHaveText("4");
 	});
@@ -36,7 +35,6 @@ test.describe("islands — hydration directives", () => {
 		const btn = getButton(page, "visible");
 		await expect(btn).toHaveText("4");
 		await btn.scrollIntoViewIfNeeded();
-		await page.waitForTimeout(500);
 		await btn.click();
 		await expect(btn).toHaveText("5");
 	});
@@ -45,24 +43,23 @@ test.describe("islands — hydration directives", () => {
 		const btn = getButton(page, "skip");
 		await expect(btn).toHaveText("5");
 		await btn.click();
-		await page.waitForTimeout(300);
 		await expect(btn).toHaveText("5");
 	});
 });
 
 test.describe("islands — SSR attributes", () => {
 	test("renders all islands with correct entry names", async ({ page }) => {
-		await page.goto("/e2e/islands", { waitUntil: "domcontentloaded" });
+		await page.goto("/islands", { waitUntil: "domcontentloaded" });
 		await expect(page.locator('yamf-island[island-entry="Counter"]')).toHaveCount(5);
 	});
 
 	test("skip island has island-client='skip' attribute", async ({ page }) => {
-		await page.goto("/e2e/islands", { waitUntil: "domcontentloaded" });
+		await page.goto("/islands", { waitUntil: "domcontentloaded" });
 		await expect(page.locator('yamf-island[island-client="skip"]')).toHaveCount(1);
 	});
 
 	test("yamf-island has display:contents style", async ({ page }) => {
-		await page.goto("/e2e/islands", { waitUntil: "domcontentloaded" });
+		await page.goto("/islands", { waitUntil: "domcontentloaded" });
 		const island = page.locator("yamf-island").first();
 		const style = await island.getAttribute("style");
 		expect(style).toContain("display:contents");
@@ -71,7 +68,7 @@ test.describe("islands — SSR attributes", () => {
 
 test.describe("islands — multiple islands independence", () => {
 	test("home page islands are independently interactive", async ({ page }) => {
-		await page.goto("/e2e", { waitUntil: "networkidle" });
+		await page.goto("", { waitUntil: "networkidle" });
 
 		const buttons = page.locator("yamf-island button");
 		expect(await buttons.count()).toBeGreaterThanOrEqual(3);
@@ -90,21 +87,21 @@ test.describe("islands — multiple islands independence", () => {
 
 test.describe("islands — named vs default exports", () => {
 	test("named export islands have correct entry attribute", async ({ page }) => {
-		await page.goto("/e2e", { waitUntil: "domcontentloaded" });
+		await page.goto("", { waitUntil: "domcontentloaded" });
 		expect(
 			await page.locator('yamf-island[island-entry="Counter"]').count(),
 		).toBeGreaterThanOrEqual(1);
 	});
 
 	test("default export island has entry='default'", async ({ page }) => {
-		await page.goto("/e2e/islands", { waitUntil: "domcontentloaded" });
+		await page.goto("/islands", { waitUntil: "domcontentloaded" });
 		await expect(page.locator('yamf-island[island-entry="default"]')).toBeVisible();
 	});
 });
 
 test.describe("islands — props serialization (devalue)", () => {
 	test.beforeEach(async ({ page }) => {
-		await page.goto("/e2e/props", { waitUntil: "networkidle" });
+		await page.goto("/props", { waitUntil: "networkidle" });
 	});
 
 	test("Date round-trips correctly", async ({ page }) => {
@@ -141,7 +138,7 @@ test.describe("islands — props serialization (devalue)", () => {
 
 test.describe("islands — useHead in islands (client-side)", () => {
 	test("Counter with withTitle updates title on click", async ({ page }) => {
-		await page.goto("/e2e", { waitUntil: "networkidle" });
+		await page.goto("", { waitUntil: "networkidle" });
 
 		const buttons = page.locator("yamf-island button");
 		const last = buttons.last();

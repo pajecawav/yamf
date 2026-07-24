@@ -1,7 +1,7 @@
 import { definePage } from "@pajecawav/yamf";
 import { Suspense } from "hono/jsx";
-import { AsyncCounter } from "./components/AsyncCounter";
-import { Container } from "./components/Container";
+import { AsyncCounter } from "~/components/AsyncCounter";
+import { Container } from "~/components/Container";
 
 export default definePage({
 	stream: true,

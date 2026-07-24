@@ -1,4 +1,5 @@
 packages:
     - playground
+    - e2e/app
 allowBuilds:
     esbuild: true

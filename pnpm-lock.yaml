@@ -94,6 +94,34 @@ importers:
         specifier: ^8.1.5
         version: 8.1.5(@types/node@24.13.3)(esbuild@0.27.3)(jiti@2.6.1)(yaml@2.9.0)
 
+  e2e/app:
+    dependencies:
+      '@tanstack/react-query':
+        specifier: ^5.101.4
+        version: 5.101.4(react@19.2.8)
+      swr:
+        specifier: ^2.4.2
+        version: 2.4.2(react@19.2.8)
+    devDependencies:
+      '@pajecawav/yamf':
+        specifier: workspace:*
+        version: link:../..
+      '@types/node':
+        specifier: ^24.13.3
+        version: 24.13.3
+      hono:
+        specifier: ^4.12.30
+        version: 4.12.31
+      tinyglobby:
+        specifier: ^0.2.17
+        version: 0.2.17
+      typescript:
+        specifier: ~7.0.2
+        version: 7.0.2
+      vite:
+        specifier: ^8.1.5
+        version: 8.1.5(@types/node@24.13.3)(esbuild@0.27.3)(jiti@2.6.1)(yaml@2.9.0)
+
   playground:
     dependencies:
       '@tanstack/react-query':
@@ -3306,9 +3334,9 @@ snapshots:
 
   exsolve@1.1.0: {}
 
-  fdir@6.5.0(picomatch@4.0.4):
+  fdir@6.5.0(picomatch@4.0.5):
     optionalDependencies:
-      picomatch: 4.0.4
+      picomatch: 4.0.5
 
   figures@6.1.0:
     dependencies:
@@ -3852,8 +3880,8 @@ snapshots:
 
   tinyglobby@0.2.17:
     dependencies:
-      fdir: 6.5.0(picomatch@4.0.4)
-      picomatch: 4.0.4
+      fdir: 6.5.0(picomatch@4.0.5)
+      picomatch: 4.0.5
 
   tinypool@2.1.0: {}
 

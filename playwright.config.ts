@@ -3,16 +3,9 @@ import { defineConfig } from "@playwright/test";
 const PORT = 4321;
 const URL = `http://localhost:${PORT}`;
 
-const COMMAND_PROD = [
-	"pnpm build",
-	"pnpm play:build",
-	`pnpm --filter=playground exec vite preview --port=${PORT} --strictPort`,
-].join(" && ");
+const COMMAND = ["pnpm build", `pnpm vite preview --port=${PORT} --strictPort`].join(" && ");
 
-const COMMAND_DEV = [
-	"pnpm build",
-	`pnpm --filter=playground exec vite --port=${PORT} --strictPort`,
-].join(" && ");
+const COMMAND_DEV = `pnpm vite --port=${PORT} --strictPort`;
 
 export default defineConfig({
 	testDir: "./e2e",
@@ -26,7 +19,8 @@ export default defineConfig({
 		baseURL: URL,
 	},
 	webServer: {
-		command: process.env.TEST_DEV ? COMMAND_DEV : COMMAND_PROD,
+		command: process.env.TEST_DEV ? COMMAND_DEV : COMMAND,
+		cwd: "./e2e/app",
 		url: URL,
 		reuseExistingServer: !process.env.CI,
 	},

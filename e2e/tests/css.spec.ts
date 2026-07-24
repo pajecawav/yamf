@@ -3,25 +3,25 @@ import { expect, test } from "@playwright/test";
 test.describe("CSS styles", () => {
 	test.describe("CSS modules — scoped class names", () => {
 		test("Counter buttons have scoped class", async ({ page }) => {
-			await page.goto("/e2e", { waitUntil: "domcontentloaded" });
+			await page.goto("", { waitUntil: "domcontentloaded" });
 			const cls = await page.locator("yamf-island button").first().getAttribute("class");
 			expect(cls).toMatch(/_counter_\w+/);
 		});
 
 		test("Container has scoped class", async ({ page }) => {
-			await page.goto("/e2e", { waitUntil: "domcontentloaded" });
+			await page.goto("", { waitUntil: "domcontentloaded" });
 			await expect(page.locator('[class*="_container_"]')).toBeVisible();
 		});
 
 		test("Root layout has scoped class", async ({ page }) => {
-			await page.goto("/e2e", { waitUntil: "domcontentloaded" });
+			await page.goto("", { waitUntil: "domcontentloaded" });
 			await expect(page.locator('[class*="_layout_"]')).toBeVisible();
 		});
 	});
 
 	test.describe("CSS modules — computed styles", () => {
 		test.beforeEach(async ({ page }) => {
-			await page.goto("/e2e", { waitUntil: "networkidle" });
+			await page.goto("", { waitUntil: "networkidle" });
 		});
 
 		test("counter text color is blue", async ({ page }) => {
@@ -51,7 +51,7 @@ test.describe("CSS styles", () => {
 
 	test.describe("global CSS", () => {
 		test("body has red border from global CSS", async ({ page }) => {
-			await page.goto("/e2e", { waitUntil: "networkidle" });
+			await page.goto("", { waitUntil: "networkidle" });
 			expect(await page.evaluate(() => getComputedStyle(document.body).borderWidth)).toBe(
 				"5px",
 			);
@@ -63,12 +63,12 @@ test.describe("CSS styles", () => {
 
 	test.describe("CSS link tags in head", () => {
 		test("includes stylesheet links", async ({ page }) => {
-			await page.goto("/e2e", { waitUntil: "domcontentloaded" });
+			await page.goto("", { waitUntil: "domcontentloaded" });
 			expect(await page.locator('link[rel="stylesheet"]').count()).toBeGreaterThanOrEqual(1);
 		});
 
 		test("CSS files are served successfully", async ({ request, page }) => {
-			await page.goto("/e2e", { waitUntil: "domcontentloaded" });
+			await page.goto("", { waitUntil: "domcontentloaded" });
 			const hrefs = await page
 				.locator('link[rel="stylesheet"]')
 				.evaluateAll(els =>
