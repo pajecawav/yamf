@@ -35,10 +35,9 @@
 		"play": "pnpm --filter=playground dev",
 		"play:build": "pnpm --filter=playground build",
 		"play:preview": "pnpm --filter=playground preview",
-		"test": "vitest run --passWithNoTests",
-		"test:watch": "vitest watch",
-		"test:coverage": "vitest run --coverage",
-		"test:ui": "vitest --ui",
+		"test": "playwright test --config e2e/playwright.config.ts",
+		"test:watch": "playwright test --config e2e/playwright.config.ts --ui",
+		"test:report": "playwright show-report e2e/playwright-report",
 		"lint": "cross-env FORCE_COLOR=1 run-p -l lint:*",
 		"lint:oxlint": "oxlint .",
 		"lint:tsc": "tsc -b --noEmit",
@@ -69,11 +68,10 @@
 	"devDependencies": {
 		"@hono/react-compat": "^0.0.3",
 		"@pajecawav/tools": "^0.0.7",
+		"@playwright/test": "^1.61.1",
 		"@types/babel__generator": "^7.27.0",
 		"@types/babel__traverse": "^7.28.0",
 		"@types/node": "^24.13.3",
-		"@vitest/coverage-v8": "^4.1.10",
-		"@vitest/ui": "^4.1.10",
 		"cross-env": "^10.1.0",
 		"hono": "^4.12.30",
 		"husky": "^9.1.7",
@@ -84,8 +82,7 @@
 		"publint": "^0.3.21",
 		"tsdown": "0.22.9",
 		"typescript": "~7.0.2",
-		"vite": "^8.1.5",
-		"vitest": "^4.1.10"
+		"vite": "^8.1.5"
 	},
 	"packageManager": "pnpm@11.15.0"
 }
