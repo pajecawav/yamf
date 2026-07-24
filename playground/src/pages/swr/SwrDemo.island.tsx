@@ -1,18 +1,26 @@
-import useSWRImmutable from "swr/immutable";
+import { useReducer } from "hono/jsx";
+import useSWR from "swr";
 
 interface SwrDemo {
 	fallbackData?: unknown;
 }
 
 export const SwrDemo = ({ fallbackData }: SwrDemo) => {
-	const query = useSWRImmutable(
-		"user",
+	const [id, increment] = useReducer((state: number) => state + 1, 1);
+
+	const query = useSWR(
+		["user", id],
 		async () => {
-			const res = await fetch("https://jsonplaceholder.typicode.com/users/10");
+			const res = await fetch(`https://jsonplaceholder.typicode.com/users/${id}`);
 			return res.json();
 		},
-		{ fallbackData },
+		{ fallbackData, revalidateOnFocus: false, keepPreviousData: true },
 	);
 
-	return <pre>{query.data ? JSON.stringify(query.data, null, 2) : "loading..."}</pre>;
+	return (
+		<div>
+			<button onClick={increment}>id: {id}</button>
+			<pre>{query.data ? JSON.stringify(query.data, null, 2) : "loading..."}</pre>
+		</div>
+	);
 };
