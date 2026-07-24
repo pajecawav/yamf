@@ -35,13 +35,6 @@ test.describe("SSR streaming", () => {
 		});
 	});
 
-	test("stream contains replacement scripts", async ({ request }) => {
-		const response = await request.get("/e2e/streaming");
-		const html = await response.text();
-		expect(html).toContain("data-hono-target");
-		expect(html).toContain("replaceWith");
-	});
-
 	test("async content values appear after resolution", async ({ page }) => {
 		await page.goto("/e2e/streaming", { waitUntil: "networkidle" });
 
@@ -49,5 +42,15 @@ test.describe("SSR streaming", () => {
 		const texts = await buttons.allTextContents();
 		expect(texts).toContain("10");
 		expect(texts).toContain("20");
+	});
+
+	test("async content becomes interactive after loading", async ({ page }) => {
+		await page.goto("/e2e/streaming", { waitUntil: "networkidle" });
+
+		const button = page.locator("yamf-island button").first();
+		await expect(button).toHaveText("10");
+
+		await button.click();
+		await expect(button).toHaveText("11");
 	});
 });

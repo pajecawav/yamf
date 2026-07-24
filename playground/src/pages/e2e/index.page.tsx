@@ -19,7 +19,7 @@ export default definePage({
 					<Counter initialValue={3} />
 					<DefaultCounter initialValue={7} withTitle />
 				</Container>
-				<p>URL: {event.url.toString()}</p>
+				<p data-testid="url">URL: {event.url.toString()}</p>
 			</>
 		);
 	},
