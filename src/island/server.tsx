@@ -1,7 +1,7 @@
 import { stringify } from "devalue";
 import type { Child, FC } from "hono/jsx";
 import type { ImportAssetsResultRaw } from "#/shared/assets";
-import type { IslandClientDirective } from "./types";
+import type { IslandClientDirective, IslandProps } from "./types";
 
 declare module "hono/jsx" {
 	namespace JSX {
@@ -10,7 +10,7 @@ declare module "hono/jsx" {
 				"island-props"?: string;
 				"island-src": string;
 				"island-entry": string;
-				"island-client": IslandClientDirective;
+				"island-client"?: IslandClientDirective;
 				children: Child;
 				style?: JSX.CSSProperties;
 			};
@@ -23,7 +23,10 @@ export const createIsland = (
 	exportName: string,
 	assets: ImportAssetsResultRaw,
 ): FC => {
-	const ComponentWrapper: FC & { name: string } = props => {
+	const ComponentWrapper: FC<IslandProps> & { name: string } = ({
+		"yamf-client": clientDirective,
+		...props
+	}) => {
 		if (!assets.entry) {
 			throw new Error(`Missing island entry for island ${Component.name}`);
 		}
@@ -33,8 +36,7 @@ export const createIsland = (
 				island-props={stringify(props)}
 				island-src={assets.entry}
 				island-entry={exportName}
-				// oxlint-disable-next-line typescript/no-unsafe-type-assertion
-				island-client={props["yamf-client"] as IslandClientDirective}
+				island-client={clientDirective}
 				// TODO: export CSS?
 				style={{ display: "contents" }}
 			>
