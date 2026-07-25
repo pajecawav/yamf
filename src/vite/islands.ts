@@ -17,6 +17,7 @@ import {
 	variableDeclaration,
 	variableDeclarator,
 } from "@babel/types";
+import MagicString from "magic-string";
 import type { Plugin } from "vite";
 
 // @ts-ignore
@@ -216,11 +217,16 @@ export const islands = (): Plugin[] => {
 			transform: {
 				order: "post",
 				handler(code) {
-					if (code.includes("__island_raw_import__")) {
-						return code.replaceAll("__island_raw_import__", "import");
+					if (!code.includes("__island_raw_import__")) {
+						return undefined;
 					}
 
-					return undefined;
+					// TODO: use native magic string from rolldown
+					// https://rolldown.rs/in-depth/native-magic-string
+					const ms = new MagicString(code);
+					ms.replaceAll("__island_raw_import__", "import");
+
+					return { code: ms.toString(), map: ms.generateMap() };
 				},
 			},
 		},
