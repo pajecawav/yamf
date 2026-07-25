@@ -1,9 +1,17 @@
 import path from "node:path";
-import type { EventHandlerRequest, EventHandlerWithFetch, H3Event } from "nitro/h3";
-import { defineHandler, HTTPError, writeEarlyHints } from "nitro/h3";
+import {
+	defineHandler,
+	EventHandler,
+	H3Event,
+	HTTPError,
+	writeEarlyHints,
+	type EventHandlerRequest,
+	type EventHandlerWithFetch,
+} from "nitro/h3";
 import { addRoute, createRouter, findRoute } from "rou3";
 import { withLeadingSlash, withoutTrailingSlash } from "ufo";
 import { clientAssets } from "virtual:yamf:assets";
+import { errorHandler } from "virtual:yamf:error-handler";
 import { pages, assets as pagesServerAssets } from "virtual:yamf:pages";
 import { rootAssets } from "virtual:yamf:root";
 import type { PageHandler } from "#/page";
@@ -52,7 +60,7 @@ export interface DefineServerEntryOptions {
 }
 
 export const defineServerEntry = (options?: DefineServerEntryOptions): ServerEntry => {
-	return defineHandler(async event => {
+	const rootHandler: EventHandler<EventHandlerRequest, Promise<unknown>> = async event => {
 		const route = findRoute(router, "GET", event.url.pathname);
 
 		if (!route) {
@@ -79,5 +87,19 @@ export const defineServerEntry = (options?: DefineServerEntryOptions): ServerEnt
 			assets,
 			head: typeof options?.head === "function" ? options.head(event) : options?.head,
 		});
+	};
+
+	return defineHandler(async event => {
+		if (!errorHandler) {
+			return rootHandler(event);
+		}
+
+		try {
+			return await rootHandler(event);
+		} catch (error) {
+			const httpError = error instanceof HTTPError ? error : new HTTPError({ cause: error });
+
+			return errorHandler(httpError, event);
+		}
 	});
 };

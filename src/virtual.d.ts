@@ -18,3 +18,11 @@ declare module "virtual:yamf:root" {
 
 	export { Root, rootAssets };
 }
+
+declare module "virtual:yamf:error-handler" {
+	import type { H3Event, HTTPError } from "nitro/h3";
+
+	type ErrorHandler = (error: HTTPError, event: H3Event) => Promise<Response | undefined>;
+
+	export const errorHandler: ErrorHandler | null;
+}

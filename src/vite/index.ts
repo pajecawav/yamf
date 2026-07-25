@@ -4,6 +4,7 @@ import { nitro } from "nitro/vite";
 import type { EnvironmentOptions, PluginOption } from "vite";
 import { islands } from "./islands";
 import { virtualAssets } from "./virtual-assets";
+import { virtualErrorHandler } from "./virtual-error-handler";
 import { virtualPages } from "./virtual-pages";
 import { virtualRoot } from "./virtual-root";
 import { virtualTemplate } from "./virtual-template";
@@ -75,6 +76,7 @@ const yamf = (options?: YamfOptions): PluginOption[] => {
 
 	plugins.push(islands());
 
+	plugins.push(virtualErrorHandler(options));
 	plugins.push(virtualAssets());
 	plugins.push(virtualPages());
 	plugins.push(virtualTemplate());
