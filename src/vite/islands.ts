@@ -1,30 +1,18 @@
 // reference https://github.com/hi-ogawa/vite-plugin-fullstack/blob/28e9540a68529c58842e9a3bf17d2193a065d524/examples/island/src/framework/island/plugin.ts
-import { generate } from "@babel/generator";
-import { parse } from "@babel/parser";
-import _traverse from "@babel/traverse";
-import {
-	callExpression,
-	exportDefaultDeclaration,
-	exportNamedDeclaration,
-	functionDeclaration,
-	functionExpression,
-	identifier,
-	importDeclaration,
-	importDefaultSpecifier,
-	importNamespaceSpecifier,
-	memberExpression,
-	stringLiteral,
-	variableDeclaration,
-	variableDeclarator,
-} from "@babel/types";
-import MagicString from "magic-string";
-import type { Plugin } from "vite";
-
-// @ts-ignore
-// oxlint-disable-next-line typescript/no-unsafe-type-assertion
-const traverse = (_traverse.default as typeof _traverse) ?? _traverse;
+import { withMagicString } from "rolldown-string";
+import type { ParserOptions, Plugin } from "vite";
+import { Visitor } from "vite";
 
 const ISLAND_REGEX = /\.island\.(j|t)sx?$/;
+
+type Lang = NonNullable<ParserOptions["lang"]>;
+
+function langFromId(id: string): Lang {
+	if (id.endsWith(".tsx")) return "tsx";
+	if (id.endsWith(".ts")) return "ts";
+	if (id.endsWith(".jsx")) return "jsx";
+	return "js";
+}
 
 export const islands = (): Plugin[] => {
 	return [
@@ -32,202 +20,103 @@ export const islands = (): Plugin[] => {
 			name: "yamf:islands",
 			transform: {
 				filter: { id: ISLAND_REGEX },
-				handler(code, id) {
+				handler: withMagicString(function (this, s, id) {
 					if (this.environment.name !== "ssr") {
 						return;
 					}
 
-					const seenExports = new Set<string>();
-
-					const ast = parse(code, {
-						sourceType: "module",
-						plugins: ["typescript", "jsx"],
+					const program = this.parse(s.original, {
+						lang: langFromId(id),
 					});
 
-					traverse(ast, {
-						Program(path) {
-							// prepends server island runtime
-							// import * as __runtime from "yamf/server";
-							path.unshiftContainer(
-								"body",
-								importDeclaration(
-									[importNamespaceSpecifier(identifier("__runtime"))],
-									stringLiteral("@pajecawav/yamf/server"),
-								),
-							);
+					// prepend server island runtime + asset imports:
+					//   import * as __runtime from "@pajecawav/yamf/server";
+					//   import __assets from "<id>?assets=client";
+					s.prepend(`import * as __runtime from "@pajecawav/yamf/server";\n`);
+					s.prepend(`import __assets from "${id}?assets=client";\n`);
 
-							// prepends asset imports for the island:
-							// import __assets from "MODULE_ID?assets=client";
-							path.unshiftContainer(
-								"body",
-								importDeclaration(
-									[importDefaultSpecifier(identifier("__assets"))],
-									stringLiteral(`${id}?assets=client`),
-								),
-							);
-						},
-						ExportDefaultDeclaration(path) {
-							const declarationType = path.node.declaration.type;
+					const seenExports = new Set<string>();
 
+					new Visitor({
+						ExportDefaultDeclaration(node) {
+							const declaration = node.declaration;
 							if (
-								!(
-									declarationType === "FunctionDeclaration" ||
-									declarationType === "FunctionExpression" ||
-									declarationType === "ArrowFunctionExpression"
-								)
+								declaration.type !== "FunctionDeclaration" &&
+								declaration.type !== "FunctionExpression" &&
+								declaration.type !== "ArrowFunctionExpression"
 							) {
 								return;
 							}
 
-							const originalFunction =
-								path.node.declaration.type === "FunctionExpression" ||
-								path.node.declaration.type === "ArrowFunctionExpression"
-									? path.node.declaration
-									: functionExpression(
-											null,
-											path.node.declaration.params,
-											path.node.declaration.body,
-											undefined,
-											path.node.declaration.async,
-										);
-
-							const islandIdentifier = identifier("__ISLAND__");
-
-							path.insertBefore(
-								variableDeclaration("const", [
-									variableDeclarator(islandIdentifier, originalFunction),
-								]),
-							);
-
-							path.replaceWith(
-								exportDefaultDeclaration(
-									callExpression(
-										memberExpression(
-											identifier("__runtime"),
-											identifier("createIsland"),
-										),
-										[
-											islandIdentifier,
-											stringLiteral("default"),
-											identifier("__assets"),
-										],
-									),
-								),
+							// export default <fn> ->
+							// const __ISLAND__ = <fn>; export default __runtime.createIsland(__ISLAND__, "default", __assets)
+							s.overwrite(node.start, declaration.start, "const __ISLAND__ = ");
+							s.appendRight(
+								declaration.end,
+								`; export default __runtime.createIsland(__ISLAND__, "default", __assets)`,
 							);
 						},
-						ExportNamedDeclaration(path) {
-							if (path.node.declaration?.type === "VariableDeclaration") {
-								const declaration = path.node.declaration.declarations.at(0);
-
+						ExportNamedDeclaration(node) {
+							const declaration = node.declaration;
+							if (declaration?.type === "VariableDeclaration") {
+								const declarator = declaration.declarations[0];
 								if (
-									!declaration ||
-									declaration.id.type !== "Identifier" ||
-									seenExports.has(declaration.id.name)
+									!declarator ||
+									declarator.id.type !== "Identifier" ||
+									!declarator.init ||
+									seenExports.has(declarator.id.name)
 								) {
 									return;
 								}
-								const exportName = declaration.id.name;
+								const exportName = declarator.id.name;
 								seenExports.add(exportName);
 
-								const islandIdentifier = identifier(`__wrap_${exportName}`);
-
-								path.insertBefore(
-									variableDeclaration("const", [
-										variableDeclarator(islandIdentifier, declaration.init),
-									]),
+								// export const <name> = <init> ->
+								// const __wrap_<name> = <init>; export const <name> = __runtime.createIsland(__wrap_<name>, "<name>", __assets)
+								s.overwrite(
+									node.start,
+									declarator.init.start,
+									`const __wrap_${exportName} = `,
 								);
-
-								path.replaceWith(
-									exportNamedDeclaration(
-										variableDeclaration("const", [
-											variableDeclarator(
-												identifier(exportName),
-												callExpression(
-													memberExpression(
-														identifier("__runtime"),
-														identifier("createIsland"),
-													),
-													[
-														islandIdentifier,
-														stringLiteral(exportName),
-														identifier("__assets"),
-													],
-												),
-											),
-										]),
-									),
+								s.appendRight(
+									declarator.init.end,
+									`; export const ${exportName} = __runtime.createIsland(__wrap_${exportName}, "${exportName}", __assets)`,
 								);
-							} else if (path.node.declaration?.type === "FunctionDeclaration") {
-								const declaration = path.node.declaration;
-
+							} else if (declaration?.type === "FunctionDeclaration") {
+								const fnId = declaration.id;
 								if (
-									!declaration ||
-									declaration.id?.type !== "Identifier" ||
-									seenExports.has(declaration.id.name)
+									!fnId ||
+									fnId.type !== "Identifier" ||
+									seenExports.has(fnId.name)
 								) {
 									return;
 								}
-								const exportName = declaration.id.name;
+								const exportName = fnId.name;
 								seenExports.add(exportName);
 
-								const islandIdentifier = identifier(`__wrap_${exportName}`);
-
-								path.insertBefore(
-									functionDeclaration(
-										islandIdentifier,
-										declaration.params,
-										declaration.body,
-										declaration.generator,
-										declaration.async,
-									),
-								);
-
-								path.replaceWith(
-									exportNamedDeclaration(
-										variableDeclaration("const", [
-											variableDeclarator(
-												identifier(exportName),
-												callExpression(
-													memberExpression(
-														identifier("__runtime"),
-														identifier("createIsland"),
-													),
-													[
-														islandIdentifier,
-														stringLiteral(exportName),
-														identifier("__assets"),
-													],
-												),
-											),
-										]),
-									),
+								// export function <name>() {} ->
+								// function __wrap_<name>() {}; export const <name> = __runtime.createIsland(__wrap_<name>, "<name>", __assets)
+								s.remove(node.start, declaration.start);
+								s.overwrite(fnId.start, fnId.end, `__wrap_${exportName}`);
+								s.appendRight(
+									declaration.end,
+									`; export const ${exportName} = __runtime.createIsland(__wrap_${exportName}, "${exportName}", __assets)`,
 								);
 							}
 						},
-					});
-
-					const result = generate(ast);
-
-					return { code: result.code, map: result.map };
-				},
+					}).visit(program);
+				}),
 			},
 		},
 		{
 			name: "yamf:islands:raw-import",
 			transform: {
 				order: "post",
-				handler(code) {
-					if (!code.includes("__island_raw_import__")) {
-						return undefined;
+				handler: withMagicString(function (s) {
+					if (s.original.includes("__island_raw_import__")) {
+						s.replaceAll("__island_raw_import__", "import");
 					}
-
-					// TODO: use native magic string from rolldown
-					// https://rolldown.rs/in-depth/native-magic-string
-					const ms = new MagicString(code);
-					ms.replaceAll("__island_raw_import__", "import");
-
-					return { code: ms.toString(), map: ms.generateMap() };
-				},
+				}),
 			},
 		},
 	];
