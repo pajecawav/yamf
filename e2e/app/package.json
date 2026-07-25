@@ -11,7 +11,7 @@
 	"devDependencies": {
 		"@pajecawav/yamf": "workspace:*",
 		"@types/node": "^24.13.3",
-		"hono": "^4.12.30",
+		"hono": "^4.12.32",
 		"tinyglobby": "^0.2.17",
 		"typescript": "~7.0.2",
 		"vite": "^8.1.5"
