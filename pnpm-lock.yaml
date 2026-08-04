@@ -10,7 +10,7 @@ importers:
     dependencies:
       '@hono/react-compat':
         specifier: ^0.0.3
-        version: 0.0.3(hono@4.12.32)
+        version: 0.0.3(hono@4.12.34)
       devalue:
         specifier: ^5.8.2
         version: 5.8.2
@@ -50,7 +50,7 @@ importers:
         version: 10.1.0
       hono:
         specifier: ^4.12.32
-        version: 4.12.32
+        version: 4.12.34
       husky:
         specifier: ^9.1.7
         version: 9.1.7
@@ -96,7 +96,7 @@ importers:
         version: 24.13.3
       hono:
         specifier: ^4.12.32
-        version: 4.12.32
+        version: 4.12.34
       tinyglobby:
         specifier: ^0.2.17
         version: 0.2.17
@@ -124,7 +124,7 @@ importers:
         version: 24.13.3
       hono:
         specifier: ^4.12.32
-        version: 4.12.32
+        version: 4.12.34
       tinyglobby:
         specifier: ^0.2.17
         version: 0.2.17
@@ -1476,8 +1476,8 @@ packages:
       crossws:
         optional: true
 
-  hono@4.12.32:
-    resolution: {integrity: sha512-XcuyW9qE2kJn07PkecMOBd5Vq/hMy7mmGw+idz1yblbg9N17ijJODrvPkn7/dwL3Kulj8LcRJ69DLOWf91dRUg==}
+  hono@4.12.34:
+    resolution: {integrity: sha512-GqXJqY/xJkJmuloTrnV1ZEXG3fqte+VjkUqoRNZXcrUidiUOP4fMSIHHY4tsqZBK++kVyWmt/AAfSUuy57/eSA==}
     engines: {node: '>=16.9.0'}
 
   hookable@6.1.1:
@@ -2386,9 +2386,9 @@ snapshots:
   '@esbuild/win32-x64@0.27.3':
     optional: true
 
-  '@hono/react-compat@0.0.3(hono@4.12.32)':
+  '@hono/react-compat@0.0.3(hono@4.12.34)':
     dependencies:
-      hono: 4.12.32
+      hono: 4.12.34
 
   '@jridgewell/gen-mapping@0.3.13':
     dependencies:
@@ -3080,7 +3080,7 @@ snapshots:
     optionalDependencies:
       crossws: 0.4.6(srvx@0.11.16)
 
-  hono@4.12.32: {}
+  hono@4.12.34: {}
 
   hookable@6.1.1: {}
 
