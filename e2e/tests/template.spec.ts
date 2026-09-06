@@ -14,7 +14,9 @@ test.describe("template.html", () => {
 		const isBefore = await page.evaluate(() => {
 			const testEl = document.querySelector(".test");
 			const islandEl = document.querySelector("yamf-island");
-			if (!testEl || !islandEl) return false;
+			if (!testEl || !islandEl) {
+				return false;
+			}
 			return (
 				(testEl.compareDocumentPosition(islandEl) & Node.DOCUMENT_POSITION_FOLLOWING) !== 0
 			);

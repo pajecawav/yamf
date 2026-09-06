@@ -8,9 +8,15 @@ const ISLAND_REGEX = /\.island\.(j|t)sx?$/;
 type Lang = NonNullable<ParserOptions["lang"]>;
 
 function langFromId(id: string): Lang {
-	if (id.endsWith(".tsx")) return "tsx";
-	if (id.endsWith(".ts")) return "ts";
-	if (id.endsWith(".jsx")) return "jsx";
+	if (id.endsWith(".tsx")) {
+		return "tsx";
+	}
+	if (id.endsWith(".ts")) {
+		return "ts";
+	}
+	if (id.endsWith(".jsx")) {
+		return "jsx";
+	}
 	return "js";
 }
 
