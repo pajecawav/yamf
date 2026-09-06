@@ -1,8 +1,9 @@
+import type { StandardSchemaV1 } from "@standard-schema/spec";
 import { Fragment, type Child } from "hono/jsx";
 import { renderToReadableStream } from "hono/jsx/streaming";
 import { Hono } from "hono/tiny";
 import type { EventHandlerResponse, H3Event } from "nitro/h3";
-import { HTTPResponse, withServerTiming } from "nitro/h3";
+import { HTTPError, HTTPResponse, withServerTiming } from "nitro/h3";
 import { useSeoMeta } from "unhead";
 import type { Unhead } from "unhead/server";
 import { transformHtmlTemplate } from "unhead/server";
@@ -24,11 +25,13 @@ export type PageHandler = (
 	},
 ) => EventHandlerResponse;
 
-export type PageRenderer = (
+export type PageRenderer<P = unknown, Q = unknown> = (
 	event: H3Event,
 	params: {
 		head: Unhead;
 		seoHead: (input: UseSeoMetaInput) => void;
+		params: P;
+		query: Q;
 	},
 ) => HTTPResponse | Child | Promise<Child | HTTPResponse>;
 
@@ -38,8 +41,8 @@ export interface PageCacheOptions {
 	private?: boolean;
 }
 
-interface DefinePageOptions {
-	render: PageRenderer;
+interface DefinePageOptions<P = unknown, Q = unknown> {
+	render: PageRenderer<P, Q>;
 	stream?: boolean;
 	/**
 	 * Cache-Control for the page response. `60` is shorthand for
@@ -47,6 +50,18 @@ interface DefinePageOptions {
 	 * adds `stale-while-revalidate` and `private`.
 	 */
 	cache?: number | PageCacheOptions;
+	/**
+	 * Standard-schema validator (zod, valibot, arktype, …) for the route
+	 * params. On failure the page throws HTTPError 404 before render; the
+	 * validated, typed output is passed to render as `params`.
+	 */
+	params?: StandardSchemaV1<unknown, P>;
+	/**
+	 * Standard-schema validator for the search params. On failure the page
+	 * throws HTTPError 400 before render; the validated, typed output is
+	 * passed to render as `query`. Repeated keys collapse to the last value.
+	 */
+	query?: StandardSchemaV1<unknown, Q>;
 }
 
 const cacheControlValue = (cache: number | PageCacheOptions): string => {
@@ -116,11 +131,49 @@ const injectHeadPayload = (template: string, script: string): string => {
 	return template.replace("</head>", `</head>${script}`);
 };
 
-export const definePage = (options: DefinePageOptions): PageHandler => {
+const validateWithSchema = async <T,>(
+	schema: StandardSchemaV1<unknown, T> | undefined,
+	value: unknown,
+	status: 400 | 404,
+	what: string,
+): Promise<T> => {
+	if (!schema) {
+		return value as T;
+	}
+
+	const result = await schema["~standard"].validate(value);
+
+	if (result.issues) {
+		throw new HTTPError(`Invalid ${what}`, {
+			status,
+			cause: new Error(result.issues.map(issue => issue.message).join("; ")),
+		});
+	}
+
+	return result.value;
+};
+
+export const definePage = <P = unknown, Q = unknown>(
+	options: DefinePageOptions<P, Q>,
+): PageHandler => {
 	return async (event, { assets, head: headInit, nonce }) => {
 		if (options.cache !== undefined) {
 			event.res.headers.set("cache-control", cacheControlValue(options.cache));
 		}
+
+		const params = await validateWithSchema(
+			options.params,
+			event.context.params,
+			404,
+			"path params",
+		);
+
+		const query = await validateWithSchema(
+			options.query,
+			Object.fromEntries(event.url.searchParams),
+			400,
+			"query params",
+		);
 
 		const { head } = createStreamableHead({ init: [headInit] });
 		const seoHead = (input?: UseSeoMetaInput) => useSeoMeta(head, input);
@@ -134,7 +187,7 @@ export const definePage = (options: DefinePageOptions): PageHandler => {
 			script: [{ type: "module", src: assets.entry }],
 		});
 
-		const content = await options.render(event, { head, seoHead });
+		const content = await options.render(event, { head, seoHead, params, query });
 
 		if (content instanceof HTTPResponse) {
 			return content;

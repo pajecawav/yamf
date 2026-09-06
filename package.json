@@ -52,6 +52,7 @@
 	},
 	"dependencies": {
 		"@hono/react-compat": "^0.0.3",
+		"@standard-schema/spec": "^1.1.0",
 		"devalue": "^5.9.2",
 		"exsolve": "^1.1.1",
 		"nitro": "3.0.260903-beta",

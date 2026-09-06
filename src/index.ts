@@ -1,5 +1,7 @@
 export { definePage } from "./page";
-export type { PageCacheOptions, PageHandler } from "./page";
+export type { PageCacheOptions, PageHandler, PageRenderer } from "./page";
+
+export type { StandardSchemaV1 } from "@standard-schema/spec";
 
 export { safeAsync } from "./safeAsync";
 export type { SafeAsyncFallbackProps } from "./safeAsync";
