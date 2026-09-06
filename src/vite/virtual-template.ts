@@ -1,5 +1,5 @@
 import { readFile } from "node:fs/promises";
-import { relative } from "node:path";
+import { isAbsolute, relative, resolve } from "node:path";
 import type { Plugin } from "vite";
 import { js } from "../shared/utils";
 
@@ -19,8 +19,16 @@ export const virtualTemplate = (): Plugin => {
 	const virtualModuleId = "virtual:yamf:template";
 	const resolvedVirtualModuleId = "\0" + virtualModuleId;
 
+	// resolved against the vite root (not cwd) so running vite from another
+	// working directory — monorepo tooling, turbo, etc — does not silently
+	// fall back to the default template
+	let root = process.cwd();
+
 	return {
 		name: "yamf:virtual-template",
+		configResolved(config) {
+			root = config.root;
+		},
 		resolveId(id) {
 			if (id === virtualModuleId) {
 				return resolvedVirtualModuleId;
@@ -34,7 +42,7 @@ export const virtualTemplate = (): Plugin => {
 			}
 
 			try {
-				const template = await readFile(TEMPLATE_PATH, "utf8");
+				const template = await readFile(resolve(root, TEMPLATE_PATH), "utf8");
 
 				return js`export const template = ${JSON.stringify(template)};`;
 			} catch (error) {
@@ -46,7 +54,11 @@ export const virtualTemplate = (): Plugin => {
 			}
 		},
 		handleHotUpdate({ file, server }) {
-			if (relative(file, TEMPLATE_PATH) === "") {
+			if (!isAbsolute(file)) {
+				return;
+			}
+
+			if (relative(resolve(root, TEMPLATE_PATH), file) === "") {
 				const mod = server.moduleGraph.getModuleById(resolvedVirtualModuleId);
 
 				if (mod) {

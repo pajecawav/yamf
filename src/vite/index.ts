@@ -1,4 +1,5 @@
 import { existsSync } from "node:fs";
+import { resolve } from "node:path";
 import type { NitroPluginConfig } from "nitro/vite";
 import { nitro } from "nitro/vite";
 import type { EnvironmentOptions, PluginOption } from "vite";
@@ -19,7 +20,11 @@ const yamf = (options?: YamfOptions): PluginOption[] => {
 	// TODO: extendable config
 	plugins.push({
 		name: "yamf:config",
-		config() {
+		config(config) {
+			// resolved against the vite root (not cwd) so running vite from
+			// another working directory does not silently drop the ssr entry
+			const root = config.root ?? process.cwd();
+
 			const ssrEnv: EnvironmentOptions = {
 				build: {
 					// TODO: figure out if this should be true
@@ -61,7 +66,7 @@ const yamf = (options?: YamfOptions): PluginOption[] => {
 					],
 				},
 				environments: {
-					...(existsSync("./src/server.tsx") ? { ssr: ssrEnv } : {}),
+					...(existsSync(resolve(root, "./src/server.tsx")) ? { ssr: ssrEnv } : {}),
 					client: {
 						build: {
 							rolldownOptions: {
@@ -82,16 +87,31 @@ const yamf = (options?: YamfOptions): PluginOption[] => {
 	plugins.push(virtualTemplate());
 	plugins.push(virtualRoot());
 
+	// reserved nitro keys are yamf-controlled and intentionally win over user
+	// values; everything else the user passes through wins. user publicAssets
+	// are merged with yamf's instead of being dropped
+	const {
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
+		serverDir: _serverDir,
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
+		renderer: _renderer,
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
+		compressPublicAssets: _compressPublicAssets,
+		publicAssets: userPublicAssets,
+		...userNitro
+	} = options?.nitro ?? {};
+
 	plugins.push(
 		nitro({
+			...userNitro,
 			serverDir: "./src",
 			renderer: false,
-			...options?.nitro,
 			compressPublicAssets: {
 				gzip: true,
 				brotli: true,
 			},
 			publicAssets: [
+				...(userPublicAssets ?? []),
 				{
 					baseURL: "assets",
 					dir: "./public/assets",
