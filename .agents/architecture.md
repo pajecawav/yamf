@@ -72,6 +72,8 @@ Files matching `*.island.{tsx,ts,jsx,js,...}` are transformed by `yamf:islands` 
 
 Via Nitro presets: `yamf({ nitro: { preset: "vercel" } })`. Output is `.output/server/index.mjs` (node-server) or platform-specific. For Vercel: `vercel.json` with `{ "framework": "nitro" }`.
 
-## Prerender/SSG: known blocker
+## Prerender/SSG
 
-Nitro's prerenderer builds a **separate** bundle (preset `nitro-prerender`, builder `rolldown`) that bypasses the Vite plugin pipeline — so the `virtual:yamf:*` modules (pages, template, root, assets) do not exist there and every route fails with 503 (`worker init failed: … Received protocol 'virtual:'`, verified 2026-09-06 on nitro 3.0.260903-beta). Making prerender work requires bridging yamf's virtual modules into nitro's own `virtual` option (or a rolldown-compatible provider) — tracked as a follow-up.
+Enabled by passing nitro's own config through: `yamf({ nitro: { prerender: { routes: [...], crawlLinks: true } } })`. Prerendered routes are written to `.output/public` as static files and served instead of SSR.
+
+How it works: nitro's prerenderer is a **separate** rolldown build (`nitro-prerender` preset) that cannot run yamf's vite plugins — `virtual:yamf:*` modules, the islands transform, and the vite asset manifests do not exist there. The `yamf:prerender` vite plugin registers a nitro module that disables the prerenderer's auto-detected `serverEntry` (`prerender:config` hook); prerender requests then fall through to the inherited renderer (nitro's vite ssr-renderer), which dispatches them via `fetchViteEnv("ssr")` into the **vite-built ssr service bundle** (`buildDir/vite/services/ssr/ssr.mjs`). Prerendered pages therefore go through the exact production SSR code path. The module also renames a prerendered `/404` route to `404.html` (`prerender:generate` hook) for static hosts.

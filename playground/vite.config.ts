@@ -10,6 +10,12 @@ export default defineConfig({
 		yamf({
 			nitro: {
 				errorHandler: "./src/error.ts",
+				// fetched through the production SSR path during `vite build` and
+				// written to .output/public as static files; routes that are not
+				// listed keep server rendering
+				prerender: {
+					routes: ["/prerendered"],
+				},
 			},
 		}),
 	],

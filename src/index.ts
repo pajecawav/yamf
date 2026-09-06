@@ -11,6 +11,7 @@ export type { SafeAsyncFallbackProps } from "./safeAsync";
 
 export { useSSRContext } from "./context/ssr";
 export { useEvent } from "./hooks/useEvent";
+export { isPrerendering } from "./hooks/isPrerendering";
 export { useHead, useSeoMeta } from "./hooks/useHead";
 
 export type { IslandClientDirective, IslandProps } from "./island/types";

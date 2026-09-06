@@ -10,6 +10,12 @@ export default defineConfig({
 		yamf({
 			nitro: {
 				errorHandler: "./src/error.ts",
+				// explicit route list (no crawlLinks) to keep the prerendered
+				// set deterministic; routes with live-SSR test coverage
+				// (/, /streaming, /head-stream) deliberately stay dynamic
+				prerender: {
+					routes: ["/islands", "/props", "/this/is/nested", "/static-streaming", "/404"],
+				},
 			},
 		}),
 	],
