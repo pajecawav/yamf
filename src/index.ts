@@ -1,5 +1,8 @@
 export { definePage } from "./page";
-export type { PageHandler } from "./page";
+export type { PageCacheOptions, PageHandler } from "./page";
+
+export { safeAsync } from "./safeAsync";
+export type { SafeAsyncFallbackProps } from "./safeAsync";
 
 export { useSSRContext } from "./context/ssr";
 export { useEvent } from "./hooks/useEvent";
