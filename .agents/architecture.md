@@ -71,3 +71,7 @@ Files matching `*.island.{tsx,ts,jsx,js,...}` are transformed by `yamf:islands` 
 ## Deployment
 
 Via Nitro presets: `yamf({ nitro: { preset: "vercel" } })`. Output is `.output/server/index.mjs` (node-server) or platform-specific. For Vercel: `vercel.json` with `{ "framework": "nitro" }`.
+
+## Prerender/SSG: known blocker
+
+Nitro's prerenderer builds a **separate** bundle (preset `nitro-prerender`, builder `rolldown`) that bypasses the Vite plugin pipeline — so the `virtual:yamf:*` modules (pages, template, root, assets) do not exist there and every route fails with 503 (`worker init failed: … Received protocol 'virtual:'`, verified 2026-09-06 on nitro 3.0.260903-beta). Making prerender work requires bridging yamf's virtual modules into nitro's own `virtual` option (or a rolldown-compatible provider) — tracked as a follow-up.
