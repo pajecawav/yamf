@@ -4,11 +4,11 @@ import { hydrateRoot } from "hono/jsx/dom/client";
 import { withLeadingSlash } from "ufo";
 import type { IslandClientDirectiveSerialized } from "./types";
 
-declare let __island_raw_import__: <T>(file: string) => Promise<T>;
+declare let __yamf_raw_import__: <T>(file: string) => Promise<T>;
 
-const listeners = new WeakMap<Element, VoidFunction>();
+const listeners: WeakMap<Element, VoidFunction> = new WeakMap();
 
-const observer = new IntersectionObserver(entries => {
+const observer: IntersectionObserver = new IntersectionObserver(entries => {
 	for (const entry of entries) {
 		if (entry.isIntersecting) {
 			listeners.get(entry.target)?.();
@@ -27,69 +27,77 @@ const unobserve = (target: Element) => {
 	listeners.delete(target);
 };
 
-customElements.define(
-	"yamf-island",
-	class extends HTMLElement {
-		public connectedCallback() {
-			const islandProps = parse(this.getAttribute("island-props") ?? "{}");
-			const islandSrc = this.getAttribute("island-src");
-			const islandEntry = this.getAttribute("island-entry");
-			// oxlint-disable-next-line typescript/no-unsafe-type-assertion
-			const islandClient = (this.getAttribute("island-client") ??
-				"load") as IslandClientDirectiveSerialized;
+// Safari does not enable requestIdleCallback by default in any stable
+// release — without a fallback, client:idle islands never hydrate there
+const requestIdle = (callback: () => void): void => {
+	const ric = window.requestIdleCallback;
 
-			if (!islandSrc) {
-				throw new Error("Missing island-src attribute");
-			}
+	if (typeof ric === "function") {
+		ric(callback);
+		return;
+	}
 
-			if (!islandEntry) {
-				throw new Error("Missing island-entry attribute");
-			}
+	setTimeout(callback, 1);
+};
 
-			const hydrateIsland = (mod: Record<string, FC>) => {
-				const Comp = mod[islandEntry];
+/**
+ * Hydrates a single <yamf-island> island. Called by the bootstrap custom
+ * element (src/client/index.ts) once this runtime module has been loaded.
+ */
+export const hydrateIsland = (island: HTMLElement): void => {
+	const islandProps = parse(island.getAttribute("island-props") ?? "{}");
+	const islandSrc = island.getAttribute("island-src");
+	const islandEntry = island.getAttribute("island-entry");
+	// oxlint-disable-next-line typescript/no-unsafe-type-assertion
+	const islandClient = (island.getAttribute("island-client") ??
+		"load") as IslandClientDirectiveSerialized;
 
-				if (!Comp) {
-					throw new Error(`Missing island entry ${islandEntry} in ${islandSrc}`);
-				}
+	if (!islandSrc) {
+		throw new Error("Missing island-src attribute");
+	}
 
-				hydrateRoot(this, <Comp {...islandProps} />);
-			};
+	if (!islandEntry) {
+		throw new Error("Missing island-entry attribute");
+	}
 
-			const initIsland = () => {
-				const src = withLeadingSlash(islandSrc);
-				void __island_raw_import__<Record<string, FC>>(src).then(hydrateIsland);
-			};
+	const hydrate = (mod: Record<string, FC>) => {
+		const Comp = mod[islandEntry];
 
-			switch (islandClient) {
-				case "true":
-				case "load":
-					initIsland();
-					break;
-				case "idle":
-					requestIdleCallback(initIsland);
-					break;
-				case "visible":
-					// yamf-island has `display: contents` which breaks IntersectionObserver
-					// so we have to observe the first child instead if it exists
-					if (this.firstElementChild) {
-						observe(this.firstElementChild, initIsland);
-					} else {
-						initIsland();
-					}
-					break;
-				case "false":
-				case "skip":
-					break;
-				default:
-					islandClient satisfies never;
-					// oxlint-disable-next-line typescript/restrict-template-expressions
-					throw new Error(`Invalid island-client value: ${islandClient}`);
-			}
+		if (!Comp) {
+			throw new Error(`Missing island entry ${islandEntry} in ${islandSrc}`);
 		}
 
-		public disconnectedCallback() {
-			unobserve(this);
-		}
-	},
-);
+		hydrateRoot(island, <Comp {...islandProps} />);
+	};
+
+	const initIsland = () => {
+		const src = withLeadingSlash(islandSrc);
+		void __yamf_raw_import__<Record<string, FC>>(src).then(hydrate);
+	};
+
+	switch (islandClient) {
+		case "true":
+		case "load":
+			initIsland();
+			break;
+		case "idle":
+			requestIdle(initIsland);
+			break;
+		case "visible":
+			// yamf-island has `display: contents` which breaks IntersectionObserver
+			// so we have to observe the first child instead if it exists
+			if (island.firstElementChild) {
+				observe(island.firstElementChild, initIsland);
+			} else {
+				initIsland();
+			}
+			break;
+		case "false":
+		case "skip":
+			break;
+		default:
+			islandClient satisfies never;
+			// oxlint-disable-next-line typescript/restrict-template-expressions
+			throw new Error(`Invalid island-client value: ${islandClient}`);
+	}
+};

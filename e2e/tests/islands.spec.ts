@@ -148,3 +148,21 @@ test.describe("islands — useHead in islands (client-side)", () => {
 		await expect(page).toHaveTitle(/Counter: 8/);
 	});
 });
+
+test.describe("islands — client:idle", () => {
+	test("idle islands hydrate when requestIdleCallback is missing (Safari)", async ({ page }) => {
+		await page.addInitScript(() => {
+			// Safari ships requestIdleCallback behind a feature flag: in stable
+			// releases it is undefined
+			delete window.requestIdleCallback;
+		});
+
+		await page.goto("/idle-island", { waitUntil: "networkidle" });
+
+		const button = page.locator("yamf-island button");
+		await expect(button).toHaveText("5");
+
+		await button.click();
+		await expect(button).toHaveText("6");
+	});
+});

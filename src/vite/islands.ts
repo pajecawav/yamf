@@ -5,6 +5,24 @@ import { Visitor } from "vite";
 
 const ISLAND_REGEX = /\.island\.(j|t)sx?$/;
 
+// inits that can plausibly evaluate to a component; anything else (object,
+// array, literal, class…) is left as a plain export with a warning
+const WRAPPABLE_INIT_TYPES = new Set([
+	"ArrowFunctionExpression",
+	"FunctionExpression",
+	"CallExpression",
+	"OptionalCallExpression",
+	"Identifier",
+	"ConditionalExpression",
+	"SequenceExpression",
+	"TSAsExpression",
+	"NonNullExpression",
+]);
+
+const isWrappableInit = (init: { type: string }): boolean => {
+	return WRAPPABLE_INIT_TYPES.has(init.type);
+};
+
 type Lang = NonNullable<ParserOptions["lang"]>;
 
 function langFromId(id: string): Lang {
@@ -42,6 +60,7 @@ export const islands = (): Plugin[] => {
 					s.prepend(`import __assets from "${id}?assets=client";\n`);
 
 					const seenExports = new Set<string>();
+					const warnings: string[] = [];
 
 					new Visitor({
 						ExportDefaultDeclaration(node) {
@@ -51,6 +70,9 @@ export const islands = (): Plugin[] => {
 								declaration.type !== "FunctionExpression" &&
 								declaration.type !== "ArrowFunctionExpression"
 							) {
+								warnings.push(
+									`${id}: export default <${declaration.type === "Identifier" ? "identifier" : declaration.type}> is not wrapped as an island — only function components are supported`,
+								);
 								return;
 							}
 
@@ -64,8 +86,20 @@ export const islands = (): Plugin[] => {
 						},
 						ExportNamedDeclaration(node) {
 							const declaration = node.declaration;
-							if (declaration?.type === "VariableDeclaration") {
-								const declarator = declaration.declarations[0];
+
+							if (!declaration) {
+								if (node.exportKind !== "type") {
+									warnings.push(
+										`${id}: export { … } statements are not wrapped as islands — export the component with \`export const\` or \`export function\``,
+									);
+								}
+								return;
+							}
+
+							if (declaration.type === "VariableDeclaration") {
+								const declarators = declaration.declarations;
+								const declarator = declarators[0];
+
 								if (
 									!declarator ||
 									declarator.id.type !== "Identifier" ||
@@ -74,7 +108,22 @@ export const islands = (): Plugin[] => {
 								) {
 									return;
 								}
+
 								const exportName = declarator.id.name;
+
+								if (!isWrappableInit(declarator.init)) {
+									warnings.push(
+										`${id}: export "${exportName}" does not look like a component — left as a plain export, not an island`,
+									);
+									return;
+								}
+
+								if (declarators.length > 1) {
+									warnings.push(
+										`${id}: only the first declarator of a multi-declarator export is wrapped as an island ("${exportName}") — split the declaration`,
+									);
+								}
+
 								seenExports.add(exportName);
 
 								// export const <name> = <init> ->
@@ -88,7 +137,7 @@ export const islands = (): Plugin[] => {
 									declarator.init.end,
 									`; export const ${exportName} = __runtime.createIsland(__wrap_${exportName}, "${exportName}", __assets)`,
 								);
-							} else if (declaration?.type === "FunctionDeclaration") {
+							} else if (declaration.type === "FunctionDeclaration") {
 								const fnId = declaration.id;
 								if (
 									!fnId ||
@@ -111,6 +160,10 @@ export const islands = (): Plugin[] => {
 							}
 						},
 					}).visit(program);
+
+					for (const warning of warnings) {
+						this.warn(warning);
+					}
 				}),
 			},
 		},
@@ -119,8 +172,9 @@ export const islands = (): Plugin[] => {
 			transform: {
 				order: "post",
 				handler: withMagicString(function (s) {
-					if (s.original.includes("__island_raw_import__")) {
-						s.replaceAll("__island_raw_import__", "import");
+					// the token is namespaced to avoid colliding with user code
+					if (s.original.includes("__yamf_raw_import__")) {
+						s.replaceAll("__yamf_raw_import__", "import");
 					}
 				}),
 			},
