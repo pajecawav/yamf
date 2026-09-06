@@ -24,6 +24,8 @@ interface Route {
 
 const router = createRouter<Route>();
 
+const registeredRoutes = new Map<string, string>();
+
 for (const [relativePath, handler] of Object.entries(pages).toSorted((a, b) =>
 	a[0].localeCompare(b[0]),
 )) {
@@ -46,6 +48,16 @@ for (const [relativePath, handler] of Object.entries(pages).toSorted((a, b) =>
 
 	route = withLeadingSlash(withoutTrailingSlash(route));
 
+	const conflictingFile = registeredRoutes.get(route);
+
+	if (conflictingFile && conflictingFile !== relativePath) {
+		console.warn(
+			`[yamf] duplicate page route "${route}": ${conflictingFile} and ${relativePath} both map to it — the routes conflict`,
+		);
+	}
+
+	registeredRoutes.set(route, relativePath);
+
 	addRoute(router, "GET", route, {
 		handler,
 		serverAssets: pagesServerAssets[relativePath],
@@ -57,6 +69,15 @@ export type ServerEntry = EventHandlerWithFetch<EventHandlerRequest, Promise<unk
 export interface DefineServerEntryOptions {
 	head?: YamfHead | ((event: H3Event) => YamfHead);
 	disableEarlyHints?: boolean;
+	/**
+	 * CSP nonce for the inline scripts yamf injects (head handshake payload
+	 * and streamed head patches).
+	 *
+	 * Note: unhead's stream bootstrap script (`window.__unhead__||(…)`) does
+	 * not support a nonce in unhead 3.x — with a strict `script-src` CSP it
+	 * must be allowed separately (e.g. via a hash).
+	 */
+	nonce?: string | ((event: H3Event) => string | undefined);
 }
 
 export const defineServerEntry = (options?: DefineServerEntryOptions): ServerEntry => {
@@ -86,6 +107,7 @@ export const defineServerEntry = (options?: DefineServerEntryOptions): ServerEnt
 		return (await handler())(event, {
 			assets,
 			head: typeof options?.head === "function" ? options.head(event) : options?.head,
+			nonce: typeof options?.nonce === "function" ? options.nonce(event) : options?.nonce,
 		});
 	};
 

@@ -1,7 +1,7 @@
-import type { ResolvableHead } from "unhead/types";
 import { useHead } from "#/hooks/useHead";
+import type { YamfHead } from "#/shared/head";
 
-export type HeadProps = ResolvableHead;
+export type HeadProps = YamfHead;
 
 export const Head = (props: HeadProps): void => {
 	useHead(props);
