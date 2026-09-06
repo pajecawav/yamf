@@ -3,6 +3,9 @@ export type { PageCacheOptions, PageHandler, PageRenderer } from "./page";
 
 export type { StandardSchemaV1 } from "@standard-schema/spec";
 
+// re-exported so apps can annotate render args without depending on unhead
+export type { Unhead } from "unhead/server";
+
 export { safeAsync } from "./safeAsync";
 export type { SafeAsyncFallbackProps } from "./safeAsync";
 

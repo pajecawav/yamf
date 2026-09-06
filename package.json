@@ -48,7 +48,13 @@
 	},
 	"peerDependencies": {
 		"hono": "^4.12.30",
-		"vite": "^8.1.5"
+		"vite": "^8.1.5",
+		"wouter": "^3.11.0"
+	},
+	"peerDependenciesMeta": {
+		"wouter": {
+			"optional": true
+		}
 	},
 	"dependencies": {
 		"@hono/react-compat": "^0.0.3",

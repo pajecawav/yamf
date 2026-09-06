@@ -1,6 +1,6 @@
 # yamf
 
-SSR meta-framework on top of [Vite](https://vite.dev), [Nitro](https://nitro.build/), and [Hono JSX](https://hono.dev/docs/guides/jsx). File-based routing for HTML pages, islands architecture for client interactivity, client-side routing via [wouter](https://github.com/molefrog/wouter), React-ecosystem compatibility through [@hono/react-compat](https://github.com/honojs/react-compat), head/SEO via [unhead](https://unhead.unjs.io/), and full Nitro feature set (presets, caching, middleware, API routes).
+SSR meta-framework on top of [Vite](https://vite.dev), [Nitro](https://nitro.build/), and [Hono JSX](https://hono.dev/docs/guides/jsx). File-based routing for HTML pages, islands architecture for client interactivity, routing hooks in islands via [wouter](https://github.com/molefrog/wouter), React-ecosystem compatibility through [@hono/react-compat](https://github.com/honojs/react-compat), head/SEO via [unhead](https://unhead.unjs.io/), and full Nitro feature set (presets, caching, middleware, API routes).
 
 ## Install
 
@@ -98,6 +98,56 @@ export default definePage({
 });
 ```
 
+### Streaming and mid-stream errors
+
+Set `stream: true` to flush the shell early and stream Suspense boundaries as they resolve (better TTFB for slow data). If an async component rejects after the shell has been sent, the streaming renderer swallows the error and the fallback would stay forever — wrap risky async components with `safeAsync` to render an error fallback instead:
+
+```tsx
+import { definePage, safeAsync } from "@pajecawav/yamf";
+import { Suspense } from "hono/jsx";
+
+const SlowSection = safeAsync(Slow, () => <p>Failed to load.</p>);
+
+export default definePage({
+    stream: true,
+    render: () => (
+        <Suspense fallback={<p>Loading…</p>}>
+            <SlowSection />
+        </Suspense>
+    ),
+});
+```
+
+### Caching
+
+```tsx
+export default definePage({
+    cache: 60, // Cache-Control: public, max-age=60
+    // or
+    cache: { maxAge: 60, swr: 10, private: true },
+    render: () => ...,
+});
+```
+
+### Params and query validation
+
+`params` and `query` accept any [standard-schema](https://standardschema.dev/) validator (zod, valibot, arktype…). Validation runs before render: invalid path params produce 404, invalid query produces 400. Validated, typed values are passed to `render`:
+
+```tsx
+import { z } from "zod";
+import { definePage } from "@pajecawav/yamf";
+
+export default definePage({
+    params: z.object({ id: z.coerce.number().int() }),
+    query: z.object({ page: z.coerce.number().default(1) }),
+    render: (_event, { params, query }) => (
+        <p>
+            {params.id} — page {query.page}
+        </p>
+    ),
+});
+```
+
 ## Islands
 
 Any file matching `*.island.{tsx,ts,jsx,js}` is automatically wrapped. Each exported function becomes an island that server-renders inside `<yamf-island>` and hydrates on the client.
@@ -147,7 +197,7 @@ export default definePage({
 | `visible`        | Hydrate when scrolled into view.    |
 | `skip`           | Server-rendered only, no hydration. |
 
-Props are serialized with `devalue` (supports `Date`, `Map`, `Set`, `URL`, `RegExp`, `Error`, `BigInt`, cycles).
+Props are serialized with `devalue` (supports `Date`, `Map`, `Set`, `URL`, `RegExp`, `Error`, `BigInt`, cycles). Islands with `yamf-client="skip"` (or `false`) do not serialize their props at all — the client never reads them. In dev, yamf warns when serialized props exceed 16KB (configurable via the `YAMF_ISLAND_PROPS_LIMIT` define/env).
 
 ### React ecosystem compatibility
 
@@ -155,7 +205,7 @@ The Vite plugin aliases `react` and `react-dom` to [`@hono/react-compat`](https:
 
 ## Routing
 
-Every page renders inside a [wouter](https://github.com/molefrog/wouter) `<Router>`, seeded with the current request's `pathname` and `search` for SSR. After hydration, navigation is client-side — wouter hooks and components work inside islands and the root layout:
+Every page renders inside a [wouter](https://github.com/molefrog/wouter) `<Router>`, seeded with the current request's `pathname` and `search` for SSR. wouter hooks and components work inside islands and the root layout:
 
 ```tsx
 // src/components/Search.island.tsx
@@ -178,7 +228,11 @@ export const Search = () => {
 };
 ```
 
-wouter's `Link`, `Route`, `useLocation`, `useRoute`, and `useSearchParams` are all available. Note that yamf's file-based routing (see [File routing](#file-routing)) handles full-page SSR routes, while wouter handles client-side navigation and query-param state within a page.
+wouter's `Route`, `useLocation`, `useRoute`, and `useSearchParams` are all available for in-page routing state. wouter is an optional peer dependency of yamf — declare it in your own `package.json` when you use it in islands.
+
+**Navigation between pages is always a full page load** — pages are server-rendered HTML documents and are not shipped to the client. Use plain `<a href>` links for page navigation (optionally with [Speculation Rules](https://developer.mozilla.org/en-US/docs/Web/API/Speculation_Rules_API) prefetching/prerendering).
+
+> **Footgun:** wouter's `<Link>` inside an island intercepts the click and changes the URL with `history.pushState` — but the page content does not change, leaving the URL and the document out of sync. Do not use `<Link>` for cross-page navigation in yamf.
 
 ## Client entry
 
@@ -187,7 +241,9 @@ wouter's `Link`, `Route`, `useLocation`, `useRoute`, and `useSearchParams` are a
 import "@pajecawav/yamf/client";
 ```
 
-Side-effect import. Registers the `yamf-island` custom element and initializes `window.__UNHEAD__`. Required for island hydration and client-side `useHead`.
+Side-effect import. Registers the `yamf-island` custom element via a tiny (~1KB) bootstrap and initializes the client head. The full hydration runtime (hono/jsx DOM renderer, devalue, unhead client) is dynamically imported only when the document actually contains an island — island-free pages don't pay for it.
+
+The client head is hydrated from the server: the entry-head config (including `titleTemplate`) and the server's head entries are re-registered on the client, and head patches streamed after the shell are applied on hydration.
 
 ## Head and SEO
 
@@ -263,8 +319,8 @@ Optional. Wraps every page's content. CSS imported here is included in the asset
 
 - `useEvent()` — current `H3Event`. Works in components inside the render tree and root layout, not in `render` itself.
 - `useSSRContext()` — returns `{ head, event } | null`.
-- `useHead(input)` — push head tags.
-- `useSeoMeta(input)` — shorthand for SEO meta.
+- `useHead(input)` — push head tags. On the client this is a real hook: the head entry is created once per component, patched on re-render and disposed on unmount — call it unconditionally at the top level of the component.
+- `useSeoMeta(input)` — shorthand for SEO meta. Same lifecycle on the client.
 
 ## API routes and error handling
 
