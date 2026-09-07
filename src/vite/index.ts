@@ -4,6 +4,7 @@ import type { NitroPluginConfig } from "nitro/vite";
 import { nitro } from "nitro/vite";
 import type { EnvironmentOptions, PluginOption } from "vite";
 import { islands } from "./islands";
+import { prerenderModule } from "./prerender";
 import { virtualAssets } from "./virtual-assets";
 import { virtualErrorHandler } from "./virtual-error-handler";
 import { virtualPages } from "./virtual-pages";
@@ -86,6 +87,12 @@ const yamf = (options?: YamfOptions): PluginOption[] => {
 	plugins.push(virtualPages());
 	plugins.push(virtualTemplate());
 	plugins.push(virtualRoot());
+
+	// registers the nitro module that makes prerender work (see prerenderModule)
+	plugins.push({
+		name: "yamf:prerender",
+		nitro: prerenderModule,
+	});
 
 	// reserved nitro keys are yamf-controlled and intentionally win over user
 	// values; everything else the user passes through wins. user publicAssets

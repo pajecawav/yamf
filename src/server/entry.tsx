@@ -93,7 +93,9 @@ export const defineServerEntry = (options?: DefineServerEntryOptions): ServerEnt
 
 		const assets = clientAssets.merge(...[rootAssets, serverAssets].filter(x => !!x));
 
-		if (!options?.disableEarlyHints) {
+		// early hints are pointless inside the prerender worker — nitro's
+		// prerenderer buffers the response to a file and discards them
+		if (!options?.disableEarlyHints && !event.req.headers.has("x-nitro-prerender")) {
 			const link = [
 				...assets.js.map(script => `<${script.href}>; rel=modulepreload`),
 				...assets.css.map(style => `<${style.href}>; rel=preload; as=style`),

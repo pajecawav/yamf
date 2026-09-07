@@ -8,6 +8,7 @@
     - `params` / `query` — [standard-schema](https://standardschema.dev/) validators; invalid params → 404, invalid query → 400; validated values are passed to `render`.
 - `safeAsync(Component, fallback?)` — wraps an async server component so a rejection after the streamed shell renders a fallback instead of an eternal loading state.
 - `useEvent()` — current `H3Event` from SSR context. For components inside the render tree / root layout.
+- `isPrerendering()` — `true` while nitro's build-time prerenderer fetches the route to write it to disk; `false` in dev and at request time. Prefer it over `import.meta.prerender` (never replaced in vite-built pages).
 - `useSSRContext()` — returns `{ head, event } | null`.
 - `useHead(input)` — push head tags (title, meta, link, script, htmlAttrs, bodyAttrs). Custom `seo` key is routed to `useSeoMeta`. On the client it is a lifecycle-bound hook (entry per component, patch on re-render, dispose on unmount) — call unconditionally.
 - `useSeoMeta(input)` — shorthand for SEO meta (title, description, og:_, twitter:_). Same client lifecycle.
@@ -40,6 +41,27 @@ Every page renders inside a wouter `<Router ssrPath={pathname} ssrSearch={search
 ## Islands
 
 Files matching `*.island.*` are transformed in the SSR environment. Exported function components are wrapped with `createIsland`. The transform warns on exports it cannot wrap (`export { … }`, re-exports, `export default <non-function>`, multi-declarator exports, non-component consts). `yamf-client` directives: `load` (default) / `idle` (with Safari `setTimeout` fallback) / `visible` / `skip` (no hydration — props are not serialized). Dev warning when serialized props exceed 16KB (`YAMF_ISLAND_PROPS_LIMIT`).
+
+## Prerender (SSG)
+
+Enabled through the nitro passthrough:
+
+```ts
+yamf({
+    nitro: {
+        prerender: {
+            routes: ["/", "/about"],
+            // or: crawlLinks: true, ignore: [...], failOnError, …
+        },
+    },
+});
+```
+
+Prerendered routes are fetched at build time through the production SSR path and written to `.output/public` as static files (`/about` → `about/index.html`). `routeRules` with `prerender: true` also work (exact paths only).
+
+- Prerendering a route named `/404` writes `404.html` (for static hosts like GitHub Pages) instead of `404/index.html`.
+- Detection inside pages: `isPrerendering()` — based on the `x-nitro-prerender` request header. `import.meta.prerender` always reads as `undefined` in yamf pages.
+- Limitations inherent to static files: `cache`/`swr` response headers are not carried into files, CSP nonces cannot work, query strings are not prerendered (routes are paths), and per-request content is frozen at build time. Nitro v3 accepts `retry`/`retryDelay` prerender options but does not apply them.
 
 ## Nitro utilities
 
