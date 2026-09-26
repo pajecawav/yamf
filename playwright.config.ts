@@ -3,9 +3,14 @@ import { defineConfig } from "@playwright/test";
 const PORT = 4321;
 const URL = `http://localhost:${PORT}`;
 
-const COMMAND = ["pnpm build", `pnpm vite preview --port=${PORT} --strictPort`].join(" && ");
+// NB: the long-running server must bypass the pnpm wrapper — pnpm 12.6.0 broke
+// signal forwarding for non-interactive runs (pnpm#7374), so Playwright cannot
+// kill the webServer on teardown: vite survives as an orphan holding the port.
+const VITE = "node node_modules/vite/bin/vite.js";
 
-const COMMAND_DEV = `pnpm vite --port=${PORT} --strictPort`;
+const COMMAND = ["pnpm build", `${VITE} preview --port=${PORT} --strictPort`].join(" && ");
+
+const COMMAND_DEV = `${VITE} --port=${PORT} --strictPort`;
 
 export default defineConfig({
 	testDir: "./e2e",
