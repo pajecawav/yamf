@@ -42,8 +42,8 @@ for (const [relativePath, handler] of Object.entries(pages).toSorted((a, b) =>
 			.replace(/\.[A-Za-z]+$/, "")
 			.replace(/\(([^(/\\]+)\)[/\\]/g, "")
 			.replace(/\[\.{3}]/g, "**")
-			.replace(/\[\.{3}([^\]]+)]/g, (_, p: string) => "**:" + p.replace(/[^\w-]/g, "_"))
-			.replace(/\[([^/\]]+)]/g, (_, p: string) => ":" + p.replace(/[^\w-]/g, "_"))
+			.replace(/\[\.{3}([^\]]+)]/g, (_, p: string) => "**:" + p.replace(/[^\w]/g, "_"))
+			.replace(/\[([^/\]]+)]/g, (_, p: string) => ":" + p.replace(/[^\w]/g, "_"))
 			.replace(/(\/|^)index$/, "") || "/";
 
 	route = withLeadingSlash(withoutTrailingSlash(route));

@@ -28,6 +28,11 @@ test.describe("SSR", () => {
 			await expect(page.getByTestId("param-id")).toHaveText("42");
 		});
 
+		test("param route [my-id] — dash in param name is sanitized", async ({ page }) => {
+			await page.goto("/dash-params/42");
+			await expect(page.getByTestId("param-my-id")).toHaveText("42");
+		});
+
 		test("404 for unknown route", async ({ request }) => {
 			const response = await request.get("/nonexistent");
 			expect(response.status()).toBe(404);
