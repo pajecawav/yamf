@@ -45,7 +45,11 @@ const requestIdle = (callback: () => void): void => {
  * element (src/client/index.ts) once this runtime module has been loaded.
  */
 export const hydrateIsland = (island: HTMLElement): void => {
-	const islandProps = parse(island.getAttribute("island-props") ?? "{}");
+	// skip islands omit the attribute entirely — parse after (and only if) it
+	// exists, otherwise parse("{}") would throw "Invalid input" and abort the
+	// whole pending-hydration loop
+	const rawProps = island.getAttribute("island-props");
+	const islandProps = rawProps === null ? [] : parse(rawProps);
 	const islandSrc = island.getAttribute("island-src");
 	const islandEntry = island.getAttribute("island-entry");
 	// oxlint-disable-next-line typescript/no-unsafe-type-assertion
