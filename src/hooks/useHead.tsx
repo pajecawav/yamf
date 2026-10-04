@@ -1,48 +1,13 @@
 import { useEffect, useRef } from "hono/jsx";
 import { useHead as _useHead, useSeoMeta as _useSeoMeta } from "unhead";
 import type { ClientUnhead } from "unhead/client";
-import { createHead } from "unhead/client";
-import type { ActiveHeadEntry, ResolvableHead, UseSeoMetaInput } from "unhead/types";
+import type { ActiveHeadEntry, UseSeoMetaInput } from "unhead/types";
 import { useSSRContext } from "#/context/ssr";
+import { ensureClientHead } from "#/island/head";
 import type { YamfHead } from "#/shared/head";
 
-interface StreamQueue {
-	_q?: unknown[][];
-	push?: (batch: unknown[]) => void;
-}
-
-declare global {
-	interface Window {
-		__unhead__?: StreamQueue;
-		__yamfHead__?: ClientUnhead;
-	}
-}
-
 if (!import.meta.env.SSR) {
-	const head = createHead();
-
-	const drain = (batch: unknown[]): void => {
-		for (const input of batch) {
-			head.push(input as ResolvableHead);
-		}
-	};
-
-	// inline scripts (the handshake payload and streamed suspense patches)
-	// queue into window.__unhead__ while the document parses; this module is
-	// part of the deferred client entry and runs after parsing, so by now the
-	// queue holds everything the server sent — drain it into the client head
-	const queue = window.__unhead__?._q;
-
-	if (queue) {
-		for (const batch of queue) {
-			drain(batch);
-		}
-	}
-
-	// keep late patches (a stream that is still open) working
-	window.__unhead__ = { push: drain };
-
-	window.__yamfHead__ = head;
+	ensureClientHead();
 }
 
 /**

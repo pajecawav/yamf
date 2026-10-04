@@ -2,9 +2,15 @@ import { parse } from "devalue";
 import type { FC } from "hono/jsx";
 import { hydrateRoot } from "hono/jsx/dom/client";
 import { withLeadingSlash } from "ufo";
+import { ensureClientHead } from "./head";
 import type { IslandClientDirectiveSerialized } from "./types";
 
 declare let __yamf_raw_import__: <T>(file: string) => Promise<T>;
+
+// this runtime loads whenever a page contains islands — set up the client
+// head here so the handshake payload and streamed head patches actually
+// apply, even when nothing imports the useHead hook
+ensureClientHead();
 
 const listeners: WeakMap<Element, VoidFunction> = new WeakMap();
 
