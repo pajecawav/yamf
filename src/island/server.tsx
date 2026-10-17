@@ -3,8 +3,9 @@ import type { Child, FC } from "hono/jsx";
 import type { ImportAssetsResultRaw } from "#/shared/assets";
 import type { IslandClientDirective, IslandProps } from "./types";
 
-// configurable via the YAMF_ISLAND_PROPS_LIMIT env / define
-const PROPS_WARNING_LIMIT = Number(import.meta.env["YAMF_ISLAND_PROPS_LIMIT"]) || 16 * 1024;
+// dev-only guardrail: island props are serialized into an HTML attribute —
+// nothing stops a huge object from silently bloating every response
+const PROPS_WARNING_LIMIT = 16 * 1024;
 
 declare module "hono/jsx" {
 	namespace JSX {
@@ -49,7 +50,7 @@ export const createIsland = (
 
 			if (import.meta.env.DEV && islandProps.length > PROPS_WARNING_LIMIT) {
 				console.warn(
-					`[yamf] island "${exportName}" receives ${(islandProps.length / 1024).toFixed(1)} KB of serialized props — consider slimming them down (limit: ${PROPS_WARNING_LIMIT} bytes, configurable via YAMF_ISLAND_PROPS_LIMIT)`,
+					`[yamf] island "${exportName}" receives ${(islandProps.length / 1024).toFixed(1)} KB of serialized props — consider slimming them down (limit: ${PROPS_WARNING_LIMIT} bytes)`,
 				);
 			}
 		}

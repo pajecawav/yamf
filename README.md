@@ -197,7 +197,7 @@ export default definePage({
 | `visible`        | Hydrate when scrolled into view.    |
 | `skip`           | Server-rendered only, no hydration. |
 
-Props are serialized with `devalue` (supports `Date`, `Map`, `Set`, `URL`, `RegExp`, `Error`, `BigInt`, cycles). Islands with `yamf-client="skip"` (or `false`) do not serialize their props at all — the client never reads them. In dev, yamf warns when serialized props exceed 16KB (configurable via the `YAMF_ISLAND_PROPS_LIMIT` define/env).
+Props are serialized with `devalue` (supports `Date`, `Map`, `Set`, `URL`, `RegExp`, `Error`, `BigInt`, cycles). Islands with `yamf-client="skip"` (or `false`) do not serialize their props at all — the client never reads them. In dev, yamf warns when serialized props exceed 16KB.
 
 ### React ecosystem compatibility
 

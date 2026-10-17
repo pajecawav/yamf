@@ -40,7 +40,7 @@ Every page renders inside a wouter `<Router ssrPath={pathname} ssrSearch={search
 
 ## Islands
 
-Files matching `*.island.*` are transformed in the SSR environment. Exported function components are wrapped with `createIsland`. The transform warns on exports it cannot wrap (`export { … }`, re-exports, `export default <non-function>`, multi-declarator exports, non-component consts). `yamf-client` directives: `load` (default) / `idle` (with Safari `setTimeout` fallback) / `visible` / `skip` (no hydration — props are not serialized). Dev warning when serialized props exceed 16KB (`YAMF_ISLAND_PROPS_LIMIT`).
+Files matching `*.island.*` are transformed in the SSR environment. Exported function components are wrapped with `createIsland`. The transform warns on exports it cannot wrap (`export { … }`, re-exports, `export default <non-function>`, multi-declarator exports, non-component consts). `yamf-client` directives: `load` (default) / `idle` (with Safari `setTimeout` fallback) / `visible` / `skip` (no hydration — props are not serialized). Dev warning when serialized props exceed 16KB.
 
 ## Prerender (SSG)
 
