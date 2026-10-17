@@ -3,9 +3,9 @@ declare module "virtual:yamf:assets" {
 }
 
 declare module "virtual:yamf:pages" {
-	export const pages: Record<string, () => Promise<PageHandler>>;
+	export const pages: Record<string, () => Promise<import("./page").PageHandler>>;
 
-	export const assets: Record<string, ImportAssetsResult>;
+	export const assets: Record<string, import("./shared/assets").ImportAssetsResult>;
 }
 
 declare module "virtual:yamf:template" {
