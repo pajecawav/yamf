@@ -82,7 +82,16 @@ export const hydrateIsland = (island: HTMLElement): void => {
 
 	const initIsland = () => {
 		const src = withLeadingSlash(islandSrc);
-		void __yamf_raw_import__<Record<string, FC>>(src).then(hydrate);
+		void __yamf_raw_import__<Record<string, FC>>(src)
+			.then(hydrate)
+			.catch(error => {
+				// a failed island module (chunk 404, parse error, missing
+				// entry) reports itself without breaking other islands
+				console.error(
+					`[yamf] failed to hydrate island "${islandEntry}" from ${src}`,
+					error,
+				);
+			});
 	};
 
 	switch (islandClient) {
