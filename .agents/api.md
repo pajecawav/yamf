@@ -32,7 +32,7 @@ Side-effect import. Registers the `yamf-island` custom element via a tiny bootst
 
 ## Routing (wouter)
 
-Every page renders inside a wouter `<Router ssrPath={pathname} ssrSearch={search}>`, so wouter hooks (`useSearchParams`, `useLocation`, `useRoute`) are available inside islands and the root layout. Navigation **between pages is always a full page load** — use plain `<a>` links; wouter `<Link>` inside an island desyncs the URL from the document. wouter is an optional peer dependency: declare it in the app's `package.json` to use it.
+Every page renders inside a wouter `<Router ssrPath={pathname} ssrSearch={search}>`, so wouter hooks (`useSearchParams`, `useLocation`, `useRoute`) are available inside islands and the root layout. Navigation **between pages is always a full page load** — use plain `<a>` links; wouter `<Link>` inside an island desyncs the URL from the document. wouter ships as a yamf dependency; declare it in the app's `package.json` when importing it directly.
 
 ## React ecosystem compatibility
 

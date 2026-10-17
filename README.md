@@ -172,7 +172,7 @@ export const Counter = ({ initialValue = 0 }: CounterProps) => {
 
 ```tsx
 // src/pages/index.page.tsx
-import { Counter } from "~/components/Counter.island";
+import { Counter } from "../components/Counter.island";
 
 export default definePage({
     render: () => (
@@ -228,7 +228,7 @@ export const Search = () => {
 };
 ```
 
-wouter's `Route`, `useLocation`, `useRoute`, and `useSearchParams` are all available for in-page routing state. wouter is an optional peer dependency of yamf — declare it in your own `package.json` when you use it in islands.
+wouter's `Route`, `useLocation`, `useRoute`, and `useSearchParams` are all available for in-page routing state. wouter ships as a dependency of yamf; when you import it directly in your islands, declare it in your own `package.json` so your package manager resolves it.
 
 **Navigation between pages is always a full page load** — pages are server-rendered HTML documents and are not shipped to the client. Use plain `<a href>` links for page navigation (optionally with [Speculation Rules](https://developer.mozilla.org/en-US/docs/Web/API/Speculation_Rules_API) prefetching/prerendering).
 
@@ -241,7 +241,7 @@ wouter's `Route`, `useLocation`, `useRoute`, and `useSearchParams` are all avail
 import "@pajecawav/yamf/client";
 ```
 
-Side-effect import. Registers the `yamf-island` custom element via a tiny (~1KB) bootstrap and initializes the client head. The full hydration runtime (hono/jsx DOM renderer, devalue, unhead client) is dynamically imported only when the document actually contains an island — island-free pages don't pay for it.
+Side-effect import. Registers the `yamf-island` custom element via a tiny (~1KB) bootstrap. The full hydration runtime (hono/jsx DOM renderer, devalue, unhead client) is dynamically imported only when the document actually contains an island — island-free pages don't pay for it. The client head is set up lazily by that runtime (or by the first `useHead` call), not by this entry.
 
 The client head is hydrated from the server: the entry-head config (including `titleTemplate`) and the server's head entries are re-registered on the client, and head patches streamed after the shell are applied on hydration.
 
@@ -344,6 +344,6 @@ import { defineErrorHandler } from "nitro";
 export default defineErrorHandler(error => {
     console.error(error);
 
-    return new Response(`${error.statusCode} ${error.statusMessage}`);
+    return new Response(`${error.status} ${error.statusText}`);
 });
 ```
