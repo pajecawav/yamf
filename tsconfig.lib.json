@@ -45,6 +45,6 @@
 		"noUnusedLocals": true,
 		"noUnusedParameters": true
 	},
-	"include": ["src"],
+	"include": ["src", "unit"],
 	"exclude": ["node_modules"]
 }

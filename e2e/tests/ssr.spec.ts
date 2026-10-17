@@ -33,6 +33,16 @@ test.describe("SSR", () => {
 			await expect(page.getByTestId("param-my-id")).toHaveText("42");
 		});
 
+		test("group route (marketing) is stripped from the path", async ({ page }) => {
+			await page.goto("/grouped");
+			await expect(page.getByTestId("grouped")).toBeVisible();
+		});
+
+		test("catch-all route [...segments] joins matched segments", async ({ page }) => {
+			await page.goto("/catchall/foo/bar");
+			await expect(page.getByTestId("catchall-params")).toHaveText('"foo/bar"');
+		});
+
 		test("404 for unknown route", async ({ request }) => {
 			const response = await request.get("/nonexistent");
 			expect(response.status()).toBe(404);

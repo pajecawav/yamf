@@ -37,6 +37,7 @@
 		"play:preview": "pnpm --filter=playground preview",
 		"test": "playwright test",
 		"test:ui": "playwright test --ui",
+		"test:unit": "node --test unit/",
 		"lint": "cross-env FORCE_COLOR=1 run-p -l lint:*",
 		"lint:oxlint": "oxlint .",
 		"lint:tsc": "tsc -b --noEmit",
@@ -44,7 +45,7 @@
 		"lint:package": "publint",
 		"format": "pt format",
 		"prepare": "pt prepare",
-		"prepublishOnly": "cross-env FORCE_COLOR=1 npm-run-all -l -s build -p lint:* test"
+		"prepublishOnly": "cross-env FORCE_COLOR=1 npm-run-all -l -s build -p lint:* test test:unit"
 	},
 	"peerDependencies": {
 		"hono": "^4.13.9",

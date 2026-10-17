@@ -31,6 +31,9 @@ jobs:
             - name: Lint
               run: pnpm lint
 
+            - name: Unit tests
+              run: pnpm test:unit
+
             - name: E2E tests
               run: pnpm test
 
@@ -38,5 +41,36 @@ jobs:
               if: ${{ !cancelled() }}
               with:
                   name: playwright-report
+                  path: playwright-report/
+                  retention-days: 30
+
+    e2e-dev:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v7
+
+            - uses: pnpm/action-setup@v6
+
+            - uses: actions/setup-node@v7
+              with:
+                  node-version-file: .node-version
+                  cache: pnpm
+
+            - name: Install dependencies
+              run: pnpm install --frozen-lockfile
+
+            - name: Install Playwright browsers
+              run: pnpm playwright install chromium --with-deps
+
+            - name: Build
+              run: pnpm build
+
+            - name: E2E tests (dev mode)
+              run: TEST_DEV=1 pnpm test
+
+            - uses: actions/upload-artifact@v7
+              if: ${{ !cancelled() }}
+              with:
+                  name: playwright-report-dev
                   path: playwright-report/
                   retention-days: 30
