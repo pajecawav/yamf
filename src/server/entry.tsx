@@ -1,4 +1,3 @@
-import path from "node:path";
 import {
 	defineHandler,
 	EventHandler,
@@ -9,13 +8,13 @@ import {
 	type EventHandlerWithFetch,
 } from "nitro/h3";
 import { addRoute, createRouter, findRoute } from "rou3";
-import { withLeadingSlash, withoutTrailingSlash } from "ufo";
 import { clientAssets } from "virtual:yamf:assets";
 import { errorHandler } from "virtual:yamf:error-handler";
 import { pages, assets as pagesServerAssets } from "virtual:yamf:pages";
 import { rootAssets } from "virtual:yamf:root";
 import type { PageHandler } from "#/page";
 import { YamfHead } from "#/shared/head";
+import { filePathToRoute } from "./route";
 
 interface Route {
 	handler: () => Promise<PageHandler>;
@@ -29,24 +28,7 @@ const registeredRoutes = new Map<string, string>();
 for (const [relativePath, handler] of Object.entries(pages).toSorted((a, b) =>
 	a[0].localeCompare(b[0]),
 )) {
-	const ext = path.extname(relativePath);
-
-	let route = path.relative("/src/pages", relativePath);
-
-	if (ext.length) {
-		route = route.slice(0, -ext.length);
-	}
-
-	route =
-		route
-			.replace(/\.[A-Za-z]+$/, "")
-			.replace(/\(([^(/\\]+)\)[/\\]/g, "")
-			.replace(/\[\.{3}]/g, "**")
-			.replace(/\[\.{3}([^\]]+)]/g, (_, p: string) => "**:" + p.replace(/[^\w]/g, "_"))
-			.replace(/\[([^/\]]+)]/g, (_, p: string) => ":" + p.replace(/[^\w]/g, "_"))
-			.replace(/(\/|^)index$/, "") || "/";
-
-	route = withLeadingSlash(withoutTrailingSlash(route));
+	const route = filePathToRoute(relativePath);
 
 	const conflictingFile = registeredRoutes.get(route);
 

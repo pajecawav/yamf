@@ -45,6 +45,7 @@ API routes, middleware, error handlers under `./src/` are handled by Nitro's fil
 | `src/vite/virtual-pages.ts` | Glob of `*.page.*` files                                                                     |
 | `src/vite/islands.ts`       | Babel AST transform for islands (ssr env)                                                    |
 | `src/server/entry.tsx`      | `defineServerEntry`, route registration, request flow                                        |
+| `src/server/route.ts`       | `filePathToRoute` — pages-file path → rou3 pattern (groups, params, catch-alls)              |
 | `src/page.tsx`              | `definePage`, SSR render (stream/string), head injection, wraps content in wouter `<Router>` |
 | `src/island/server.tsx`     | `createIsland` — server wrapper emitting `<yamf-island>`                                     |
 | `src/island/client.tsx`     | `yamf-island` custom element, hydration directives                                           |
