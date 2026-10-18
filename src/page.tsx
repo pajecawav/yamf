@@ -234,9 +234,20 @@ export const definePage = <P = unknown, Q = unknown>(
 				.request("/");
 		}
 
+		// hono's renderToReadableStream swallows shell-render errors: it logs
+		// them via onError and closes the stream without emitting a single
+		// chunk, and unhead's wrapStream then happily completes the template
+		// into a valid head-only HTML document. CDNs (Vercel) cache that as a
+		// successful response and serve an empty page until revalidation.
+		// Rethrowing here errors the stream instead, which surfaces as a 5xx
+		// that is never cached — with the original stack trace in the logs.
+		const onError = (error: unknown): never => {
+			throw error;
+		};
+
 		const stream = wrapStream(
 			head,
-			renderToReadableStream(<App />),
+			renderToReadableStream(<App />, onError),
 			templateWithPayload,
 			undefined,
 			{
