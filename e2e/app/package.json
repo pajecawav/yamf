@@ -10,14 +10,14 @@
 	},
 	"devDependencies": {
 		"@pajecawav/yamf": "workspace:*",
-		"@types/node": "^26.6.2",
-		"hono": "^4.13.9",
+		"@types/node": "^26.6.11",
+		"hono": "^4.13.22",
 		"tinyglobby": "^0.2.17",
 		"typescript": "~7.0.2",
-		"vite": "^8.3.0"
+		"vite": "^8.4.0"
 	},
 	"dependencies": {
-		"@tanstack/react-query": "^5.103.2",
+		"@tanstack/react-query": "^5.108.4",
 		"swr": "^2.5.1"
 	}
 }
